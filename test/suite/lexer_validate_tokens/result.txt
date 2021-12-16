@@ -1,0 +1,4 @@
+[0:18] test/suite/lexer_validate_tokens/input.kdl:L1:0 - comment<This is a comment>
+[19:4] test/suite/lexer_validate_tokens/input.kdl:L2:0 - directive<out>
+[24:13] test/suite/lexer_validate_tokens/input.kdl:L2:5 - string<Hello, World>
+[38:1] test/suite/lexer_validate_tokens/input.kdl:L2:19 - semicolon<;>

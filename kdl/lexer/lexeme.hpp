@@ -63,6 +63,8 @@ namespace kdl
         [[nodiscard]] auto uint64_value() const -> uint64_t;
         [[nodiscard]] auto double_value() const -> double;
         [[nodiscard]] auto long_double_value() const -> long double;
+
+        [[nodiscard]] auto describe() const -> std::string;
     };
 }
 

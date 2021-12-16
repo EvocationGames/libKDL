@@ -19,13 +19,26 @@
 // SOFTWARE.
 
 #include <kdl/file/source_file.hpp>
+#include <utility>
+#include <fstream>
 
 // MARK: - Constructor
 
-kdl::source_file::source_file(const std::string &source, const std::string &path)
-    : m_file_path(path), m_source(source)
+kdl::source_file::source_file(std::string source, std::string path)
+    : m_file_path(std::move(path)), m_source(std::move(source))
 {
-
+    if (m_source.empty() && m_file_path != memory) {
+        // Attempt to load the contents of the file from disk.
+        std::ifstream file(m_file_path);
+        std::string str;
+        std::string contents;
+        while (std::getline(file, str)) {
+            contents += str;
+            contents.push_back('\n');
+        }
+        m_source = std::move(contents);
+    }
+    m_source_size = m_source.size();
 }
 
 // MARK: - Accessors
@@ -38,4 +51,9 @@ auto kdl::source_file::source() const -> std::string
 auto kdl::source_file::path() const -> std::string
 {
     return m_file_path;
+}
+
+auto kdl::source_file::size() const -> std::size_t
+{
+    return m_source_size;
 }

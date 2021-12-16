@@ -1,0 +1,10 @@
+[0:48] test/suite/lexer_expressions/input.kdl:L1:0 - comment<This tests the lexers output for an expression.>
+[49:2] test/suite/lexer_expressions/input.kdl:L2:0 - start-expression<(>
+[51:3] test/suite/lexer_expressions/input.kdl:L2:2 - identifier<foo>
+[55:1] test/suite/lexer_expressions/input.kdl:L2:6 - plus<+>
+[57:1] test/suite/lexer_expressions/input.kdl:L2:8 - lparen<(>
+[58:3] test/suite/lexer_expressions/input.kdl:L2:9 - identifier<bar>
+[62:1] test/suite/lexer_expressions/input.kdl:L2:13 - star<*>
+[64:1] test/suite/lexer_expressions/input.kdl:L2:15 - decimal<2>
+[65:1] test/suite/lexer_expressions/input.kdl:L2:16 - rparen<)>
+[66:1] test/suite/lexer_expressions/input.kdl:L2:17 - end-expression<)>

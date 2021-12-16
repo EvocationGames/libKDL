@@ -1,4 +1,6 @@
+.DS_Store
 .idea/
 cmake-build-*/
 build/
 bin/
+test/output.txt

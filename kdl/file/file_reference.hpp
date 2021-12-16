@@ -33,10 +33,11 @@ namespace kdl
         std::size_t m_absolute_position { 0 };
         std::size_t m_line_offset { 0 };
         std::size_t m_line { 0 };
+        std::size_t m_size { 0 };
 
     public:
         file_reference() = default;
-        file_reference(std::shared_ptr<source_file> file, std::size_t pos, std::size_t line, std::size_t offset);
+        file_reference(std::shared_ptr<source_file> file, std::size_t pos, std::size_t line, std::size_t offset, std::size_t size);
 
         [[nodiscard]] auto valid() const -> bool;
 
@@ -44,6 +45,8 @@ namespace kdl
         [[nodiscard]] auto absolute_position() const -> std::size_t;
         [[nodiscard]] auto line_offset() const -> std::size_t;
         [[nodiscard]] auto line() const -> std::size_t;
+
+        [[nodiscard]] auto describe() const -> std::string;
     };
 }
 

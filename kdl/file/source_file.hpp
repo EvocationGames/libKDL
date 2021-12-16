@@ -30,16 +30,19 @@ namespace kdl
     class source_file: public std::enable_shared_from_this<source_file>
     {
     private:
-        static constexpr const char * memory { "::memory" };
+        static constexpr const char * memory { "{*MEMORY*}" };
 
         std::string m_file_path;
         std::string m_source;
+        std::size_t m_source_size;
 
     public:
-        explicit source_file(const std::string& source, const std::string& path = source_file::memory);
+        explicit source_file(std::string source, std::string path = source_file::memory);
 
         [[nodiscard]] auto source() const -> std::string;
         [[nodiscard]] auto path() const -> std::string;
+
+        [[nodiscard]] auto size() const -> std::size_t;
     };
 
 }

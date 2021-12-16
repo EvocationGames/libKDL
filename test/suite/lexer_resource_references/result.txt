@@ -1,0 +1,7 @@
+[0:75] test/suite/lexer_resource_references/input.kdl:L1:0 - comment<This tests the lexers output for a selection of resource reference tokens.>
+[76:4] test/suite/lexer_resource_references/input.kdl:L2:0 - resource-reference<128>
+[81:5] test/suite/lexer_resource_references/input.kdl:L3:0 - resource-reference<-192>
+[87:6] test/suite/lexer_resource_references/input.kdl:L4:0 - namespace-reference<core>
+[94:4] test/suite/lexer_resource_references/input.kdl:L4:7 - resource-reference<1000>
+[99:10] test/suite/lexer_resource_references/input.kdl:L5:0 - namespace-reference<graphics>
+[110:3] test/suite/lexer_resource_references/input.kdl:L5:11 - resource-reference<-18>

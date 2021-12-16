@@ -135,3 +135,10 @@ auto kdl::lexeme::long_double_value() const -> long double
     // TODO: Handle overflow and underflow errors
     return static_cast<long double>(std::stold(m_value));
 }
+
+// MARK: - Description
+
+auto kdl::lexeme::describe() const -> std::string
+{
+    return m_ref.describe() + " - " + describe_lexeme_type(m_type) + "<" + m_value + ">";
+}
