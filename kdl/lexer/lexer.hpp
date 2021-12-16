@@ -24,6 +24,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <functional>
 #include <kdl/file/source_file.hpp>
 #include <kdl/file/file_reference.hpp>
 #include <kdl/lexer/lexeme.hpp>

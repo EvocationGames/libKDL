@@ -20,7 +20,6 @@
 
 #include <kdl/lexer/lexer.hpp>
 #include <kdl/lexer/lexical_rules.hpp>
-#include <iostream>
 
 // MARK: - Construction
 
