@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "file/source_file.hpp"
+#include <kdl/file/source_file.hpp>
 
 // MARK: - Constructor
 

@@ -23,8 +23,8 @@
 
 #include <string>
 #include <memory>
-#include "file/file_reference.hpp"
-#include "lexer/lexeme_type.hpp"
+#include <kdl/file/file_reference.hpp>
+#include <kdl/lexer/lexeme_type.hpp>
 
 namespace kdl
 {

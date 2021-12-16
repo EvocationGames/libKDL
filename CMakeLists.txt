@@ -31,6 +31,7 @@ set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_BINARY_DIR ${CMAKE_BUILD_DIR})
 set(CMAKE_INSTALL_DIR ${CMAKE_SOURCE_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 if (UNIX AND NOT APPLE)
     set(LINUX TRUE)
@@ -43,4 +44,35 @@ file(GLOB_RECURSE LIB_SOURCES
 )
 
 add_library(KDL ${LIB_SOURCES})
-target_include_directories(KDL PUBLIC kdl)
+target_include_directories(KDL PUBLIC .)
+
+########################################################################################################################
+## Test Target
+add_executable(kdl-test test/test_target.cpp)
+target_include_directories(kdl-test PUBLIC .)
+target_link_libraries(kdl-test KDL)
+
+########################################################################################################################
+## Testing
+enable_testing()
+
+file(GLOB_RECURSE TEST_SUITE
+    test/suite/*.sh
+)
+
+foreach(TRIGGER_FILE ${TEST_SUITE})
+    string(REGEX REPLACE "^.*/test/suite/" "" TEST_NAME "${TRIGGER_FILE}")
+    string(REGEX REPLACE "/(.+)\\.sh$" "" TEST_NAME "${TEST_NAME}")
+
+    add_test(
+        NAME ${TEST_NAME}
+        COMMAND ${TRIGGER_FILE}
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    )
+endforeach()
+
+add_custom_command(
+    TARGET kdl-test
+    POST_BUILD
+    COMMAND ctest --output-on-failure
+)
