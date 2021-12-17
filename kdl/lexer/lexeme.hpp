@@ -26,7 +26,7 @@
 #include <kdl/file/file_reference.hpp>
 #include <kdl/lexer/lexeme_type.hpp>
 
-namespace kdl
+namespace kdl::lib
 {
     /* Denotes a Lexical Token contained within a source file.
      * It contains information about the token type, the textual content,

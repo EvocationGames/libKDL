@@ -18,33 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_FILE_SOURCE_FILE_HPP)
-#define KDL_FILE_SOURCE_FILE_HPP
+#include <kdl/parser/sema/directive/out.hpp>
+#include <iostream>
 
-#include <string>
-#include <memory>
-
-namespace kdl::lib
+auto kdl::lib::sema::directive::out::parse(lexeme_consumer& consumer) -> void
 {
+    consumer.assert_lexemes({ expect(lexeme_type::directive, "out").t() });
 
-    class source_file: public std::enable_shared_from_this<source_file>
-    {
-    private:
-        static constexpr const char * memory { "{*MEMORY*}" };
+    while (consumer.expect( expect(lexeme_type::semicolon).f() )) {
+        std::cout << consumer.read().string_value();
+    }
 
-        std::string m_file_path;
-        std::string m_source;
-        std::size_t m_source_size;
-
-    public:
-        explicit source_file(std::string source, std::string path = source_file::memory);
-
-        [[nodiscard]] auto source() const -> std::string;
-        [[nodiscard]] auto path() const -> std::string;
-
-        [[nodiscard]] auto size() const -> std::size_t;
-    };
-
+    std::cout << std::endl;
 }
-
-#endif //KDL_FILE_SOURCE_FILE_HPP

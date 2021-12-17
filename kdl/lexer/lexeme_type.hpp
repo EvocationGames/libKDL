@@ -21,7 +21,7 @@
 #if !defined(LEXEME_TYPE_HPP)
 #define LEXEME_TYPE_HPP
 
-namespace kdl
+namespace kdl::lib
 {
     /* Denotes the purpose and intent of a lexical token extracted from a source file.
      */

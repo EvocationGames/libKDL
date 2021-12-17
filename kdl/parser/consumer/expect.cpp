@@ -18,33 +18,63 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_FILE_SOURCE_FILE_HPP)
-#define KDL_FILE_SOURCE_FILE_HPP
+#include "kdl/parser/consumer/expect.hpp"
 
-#include <string>
-#include <memory>
+// MARK: - Construction
 
-namespace kdl::lib
+kdl::lib::expect::expect(lexeme_type type)
+    : m_type(type)
 {
-
-    class source_file: public std::enable_shared_from_this<source_file>
-    {
-    private:
-        static constexpr const char * memory { "{*MEMORY*}" };
-
-        std::string m_file_path;
-        std::string m_source;
-        std::size_t m_source_size;
-
-    public:
-        explicit source_file(std::string source, std::string path = source_file::memory);
-
-        [[nodiscard]] auto source() const -> std::string;
-        [[nodiscard]] auto path() const -> std::string;
-
-        [[nodiscard]] auto size() const -> std::size_t;
-    };
 
 }
 
-#endif //KDL_FILE_SOURCE_FILE_HPP
+kdl::lib::expect::expect(std::string value)
+    : m_value(std::move(value)), m_type(lexeme_type::unknown)
+{
+
+}
+
+kdl::lib::expect::expect(lexeme_type type, std::string value)
+    : m_value(std::move(value)), m_type(type)
+{
+
+}
+
+// MARK: - Functions
+
+auto kdl::lib::expect::to_be(bool match) const -> function
+{
+    return [&, match] (const lexeme& lx) -> bool {
+        auto outcome = true;
+
+        if (!this->m_value.empty() && !lx.is(this->m_value)) {
+            outcome = false;
+        }
+
+        if (this->m_type != lexeme_type::unknown && !lx.is(this->m_type)) {
+            outcome = false;
+        }
+
+        return (outcome == match);
+    };
+}
+
+auto kdl::lib::expect::to_match() const -> function
+{
+    return to_be(true);
+}
+
+auto kdl::lib::expect::to_not_match() const -> function
+{
+    return to_be(false);
+}
+
+auto kdl::lib::expect::t() const -> function
+{
+    return to_be(true);
+}
+
+auto kdl::lib::expect::f() const -> function
+{
+    return to_be(false);
+}

@@ -54,25 +54,25 @@ target_link_libraries(kdl-test KDL)
 
 ########################################################################################################################
 ## Testing
-enable_testing()
-
-file(GLOB_RECURSE TEST_SUITE
-    test/suite/*.sh
-)
-
-foreach(TRIGGER_FILE ${TEST_SUITE})
-    string(REGEX REPLACE "^.*/test/suite/" "" TEST_NAME "${TRIGGER_FILE}")
-    string(REGEX REPLACE "/(.+)\\.sh$" "" TEST_NAME "${TEST_NAME}")
-
-    add_test(
-        NAME ${TEST_NAME}
-        COMMAND ${TRIGGER_FILE}
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    )
-endforeach()
-
-add_custom_command(
-    TARGET kdl-test
-    POST_BUILD
-    COMMAND ctest --output-on-failure
-)
+#enable_testing()
+#
+#file(GLOB_RECURSE TEST_SUITE
+#    test/suite/*.sh
+#)
+#
+#foreach(TRIGGER_FILE ${TEST_SUITE})
+#    string(REGEX REPLACE "^.*/test/suite/" "" TEST_NAME "${TRIGGER_FILE}")
+#    string(REGEX REPLACE "/(.+)\\.sh$" "" TEST_NAME "${TEST_NAME}")
+#
+#    add_test(
+#        NAME ${TEST_NAME}
+#        COMMAND ${TRIGGER_FILE}
+#        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+#    )
+#endforeach()
+#
+#add_custom_command(
+#    TARGET kdl-test
+#    POST_BUILD
+#    COMMAND ctest --output-on-failure
+#)

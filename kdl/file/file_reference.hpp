@@ -24,7 +24,7 @@
 #include <memory>
 #include <kdl/file/source_file.hpp>
 
-namespace kdl
+namespace kdl::lib
 {
     class file_reference
     {

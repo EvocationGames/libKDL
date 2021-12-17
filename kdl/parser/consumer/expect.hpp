@@ -18,33 +18,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_FILE_SOURCE_FILE_HPP)
-#define KDL_FILE_SOURCE_FILE_HPP
+#if !defined(KDL_PARSER_CONSUMER_EXPECT_HPP)
+#define KDL_PARSER_CONSUMER_EXPECT_HPP
 
 #include <string>
-#include <memory>
+#include <functional>
+#include <kdl/lexer/lexeme.hpp>
 
 namespace kdl::lib
 {
 
-    class source_file: public std::enable_shared_from_this<source_file>
+    struct expect
     {
-    private:
-        static constexpr const char * memory { "{*MEMORY*}" };
+    public:
+        typedef std::function<auto(const lexeme&)->bool> function;
 
-        std::string m_file_path;
-        std::string m_source;
-        std::size_t m_source_size;
+    private:
+        lexeme_type m_type;
+        std::string m_value;
+
+        [[nodiscard]] auto to_be(bool match) const -> function;
 
     public:
-        explicit source_file(std::string source, std::string path = source_file::memory);
+        explicit expect(lexeme_type type);
+        explicit expect(std::string value);
+        expect(lexeme_type type, std::string value);
 
-        [[nodiscard]] auto source() const -> std::string;
-        [[nodiscard]] auto path() const -> std::string;
+        [[nodiscard]] auto to_match() const -> function;
+        [[nodiscard]] auto to_not_match() const -> function;
 
-        [[nodiscard]] auto size() const -> std::size_t;
+        [[nodiscard]] auto t() const -> function;
+        [[nodiscard]] auto f() const -> function;
     };
 
 }
 
-#endif //KDL_FILE_SOURCE_FILE_HPP
+#endif //KDL_PARSER_CONSUMER_EXPECT_HPP

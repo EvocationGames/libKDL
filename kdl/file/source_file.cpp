@@ -24,7 +24,7 @@
 
 // MARK: - Constructor
 
-kdl::source_file::source_file(std::string source, std::string path)
+kdl::lib::source_file::source_file(std::string source, std::string path)
     : m_file_path(std::move(path)), m_source(std::move(source))
 {
     if (m_source.empty() && m_file_path != memory) {
@@ -43,17 +43,17 @@ kdl::source_file::source_file(std::string source, std::string path)
 
 // MARK: - Accessors
 
-auto kdl::source_file::source() const -> std::string
+auto kdl::lib::source_file::source() const -> std::string
 {
     return m_source;
 }
 
-auto kdl::source_file::path() const -> std::string
+auto kdl::lib::source_file::path() const -> std::string
 {
     return m_file_path;
 }
 
-auto kdl::source_file::size() const -> std::size_t
+auto kdl::lib::source_file::size() const -> std::size_t
 {
     return m_source_size;
 }

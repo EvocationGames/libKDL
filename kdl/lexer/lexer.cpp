@@ -23,7 +23,7 @@
 
 // MARK: - Construction
 
-kdl::lexer::lexer(const std::shared_ptr<source_file>& source)
+kdl::lib::lexer::lexer(const std::shared_ptr<source_file>& source)
     : m_source(source)
 {
 
@@ -31,7 +31,7 @@ kdl::lexer::lexer(const std::shared_ptr<source_file>& source)
 
 // MARK: - High Level Scanning
 
-auto kdl::lexer::reset() -> void
+auto kdl::lib::lexer::reset() -> void
 {
     m_lexemes.clear();
     m_cursor_stack.clear();
@@ -40,7 +40,7 @@ auto kdl::lexer::reset() -> void
     m_line_offset = 0;
 }
 
-auto kdl::lexer::scan(bool omit_comments) -> std::vector<lexeme>
+auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
 {
     reset();
 
@@ -246,39 +246,39 @@ auto kdl::lexer::scan(bool omit_comments) -> std::vector<lexeme>
 }
 
 // MARK: - Basic Accessors
-auto kdl::lexer::eof() const -> bool
+auto kdl::lib::lexer::eof() const -> bool
 {
     return !has_available();
 }
 
-auto kdl::lexer::source_position() const -> std::size_t
+auto kdl::lib::lexer::source_position() const -> std::size_t
 {
     return m_cursor;
 }
 
-auto kdl::lexer::line() const -> std::size_t
+auto kdl::lib::lexer::line() const -> std::size_t
 {
     return m_line;
 }
 
-auto kdl::lexer::offset() const -> std::size_t
+auto kdl::lib::lexer::offset() const -> std::size_t
 {
     return m_line_offset;
 }
 
-auto kdl::lexer::lexemes() const -> std::vector<lexeme>
+auto kdl::lib::lexer::lexemes() const -> std::vector<lexeme>
 {
     return m_lexemes;
 }
 
 // MARK: - Cursor Functions
 
-auto kdl::lexer::save_cursor() -> void
+auto kdl::lib::lexer::save_cursor() -> void
 {
     m_cursor_stack.emplace_back(m_cursor);
 }
 
-auto kdl::lexer::restore_cursor() -> void
+auto kdl::lib::lexer::restore_cursor() -> void
 {
     if (m_cursor_stack.empty()) {
         throw std::logic_error("Lexer attempted to restore to a position that did not exist.");
@@ -287,7 +287,7 @@ auto kdl::lexer::restore_cursor() -> void
     m_cursor_stack.pop_back();
 }
 
-auto kdl::lexer::detached_cursor(const std::function<auto(lexer&)->bool>& ctx) -> void
+auto kdl::lib::lexer::detached_cursor(const std::function<auto(lexer&)->bool>& ctx) -> void
 {
     save_cursor();
     if (ctx(*this)) {
@@ -295,18 +295,18 @@ auto kdl::lexer::detached_cursor(const std::function<auto(lexer&)->bool>& ctx) -
     }
 }
 
-auto kdl::lexer::advance(std::int32_t offset) -> void
+auto kdl::lib::lexer::advance(std::int32_t offset) -> void
 {
     m_cursor += offset;
     m_line_offset += offset;
 }
 
-auto kdl::lexer::has_available(std::int32_t offset, std::size_t count) const -> bool
+auto kdl::lib::lexer::has_available(std::int32_t offset, std::size_t count) const -> bool
 {
     return (m_cursor + offset + count) <= (m_source->size());
 }
 
-auto kdl::lexer::peek(std::size_t count, std::int32_t offset) const -> std::string
+auto kdl::lib::lexer::peek(std::size_t count, std::int32_t offset) const -> std::string
 {
     if (!has_available(offset, count)) {
         throw std::logic_error("Failed to read string from source.");
@@ -314,7 +314,7 @@ auto kdl::lexer::peek(std::size_t count, std::int32_t offset) const -> std::stri
     return m_source->source().substr(m_cursor + offset, count);
 }
 
-auto kdl::lexer::read(std::size_t count, std::int32_t offset) -> std::string
+auto kdl::lib::lexer::read(std::size_t count, std::int32_t offset) -> std::string
 {
     auto str = peek(count, offset);
     advance(static_cast<std::int32_t>(offset + count));
@@ -323,17 +323,17 @@ auto kdl::lexer::read(std::size_t count, std::int32_t offset) -> std::string
 
 // MARK: - Test Function
 
-auto kdl::lexer::test(const std::function<auto(const std::string&)->bool>& fn, std::int32_t offset, std::size_t count) const -> bool
+auto kdl::lib::lexer::test(const std::function<auto(const std::string&)->bool>& fn, std::int32_t offset, std::size_t count) const -> bool
 {
     return fn(peek(count, offset));
 }
 
-auto kdl::lexer::test(const std::function<auto(std::size_t, const std::string&)->bool>& fn, std::int32_t offset, std::size_t count) const -> bool
+auto kdl::lib::lexer::test(const std::function<auto(std::size_t, const std::string&)->bool>& fn, std::int32_t offset, std::size_t count) const -> bool
 {
     return fn(0, peek(count, offset));
 }
 
-auto kdl::lexer::consume(const std::function<auto(const std::string&)->bool>& fn, std::size_t count) -> bool
+auto kdl::lib::lexer::consume(const std::function<auto(const std::string&)->bool>& fn, std::size_t count) -> bool
 {
     m_consume_slice.clear();
     while (fn(peek(count))) {
@@ -342,7 +342,7 @@ auto kdl::lexer::consume(const std::function<auto(const std::string&)->bool>& fn
     return !m_consume_slice.empty();
 }
 
-auto kdl::lexer::consume(const std::function<auto(std::size_t, const std::string&)->bool>& fn, std::size_t count) -> bool
+auto kdl::lib::lexer::consume(const std::function<auto(std::size_t, const std::string&)->bool>& fn, std::size_t count) -> bool
 {
     std::size_t pos = 0;
     m_consume_slice.clear();
@@ -355,29 +355,29 @@ auto kdl::lexer::consume(const std::function<auto(std::size_t, const std::string
 
 // MARK: - File References
 
-auto kdl::lexer::generate_file_reference() const -> file_reference
+auto kdl::lib::lexer::generate_file_reference() const -> file_reference
 {
     return { m_source, m_cursor, m_line, m_marker, m_line_offset - m_marker };
 }
 
 // MARK: - Lexeme Construction
 
-auto kdl::lexer::mark_lexeme_start() -> void
+auto kdl::lib::lexer::mark_lexeme_start() -> void
 {
     m_marker = m_line_offset;
 }
 
-auto kdl::lexer::construct_lexeme(lexeme_type type) const -> lexeme
+auto kdl::lib::lexer::construct_lexeme(lexeme_type type) const -> lexeme
 {
     return { type, generate_file_reference(), m_consume_slice };
 }
 
-auto kdl::lexer::construct_lexeme(kdl::lexeme_type type, const std::string& value) const -> kdl::lexeme
+auto kdl::lib::lexer::construct_lexeme(kdl::lib::lexeme_type type, const std::string& value) const -> kdl::lib::lexeme
 {
     return { type, generate_file_reference(), value };
 }
 
-auto kdl::lexer::inject_lexeme(lexeme lx) -> void
+auto kdl::lib::lexer::inject_lexeme(lexeme lx) -> void
 {
     m_lexemes.emplace_back(std::move(lx));
 }

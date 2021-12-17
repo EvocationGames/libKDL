@@ -23,7 +23,7 @@
 
 // MARK: - Constructor
 
-kdl::file_reference::file_reference(std::shared_ptr<source_file> file, std::size_t pos, std::size_t line, std::size_t offset, std::size_t size)
+kdl::lib::file_reference::file_reference(std::shared_ptr<source_file> file, std::size_t pos, std::size_t line, std::size_t offset, std::size_t size)
     : m_file(std::move(file)), m_absolute_position(pos - size), m_line_offset(offset), m_line(line), m_size(size)
 {
 
@@ -31,34 +31,34 @@ kdl::file_reference::file_reference(std::shared_ptr<source_file> file, std::size
 
 // MARK: - Accessors
 
-auto kdl::file_reference::valid() const -> bool
+auto kdl::lib::file_reference::valid() const -> bool
 {
     return (m_file != nullptr);
 }
 
-auto kdl::file_reference::file() const -> source_file&
+auto kdl::lib::file_reference::file() const -> source_file&
 {
     return *m_file;
 }
 
-auto kdl::file_reference::absolute_position() const -> std::size_t
+auto kdl::lib::file_reference::absolute_position() const -> std::size_t
 {
     return m_absolute_position;
 }
 
-auto kdl::file_reference::line_offset() const -> std::size_t
+auto kdl::lib::file_reference::line_offset() const -> std::size_t
 {
     return m_line_offset;
 }
 
-auto kdl::file_reference::line() const -> std::size_t
+auto kdl::lib::file_reference::line() const -> std::size_t
 {
     return m_line;
 }
 
 // MARK: - Description
 
-auto kdl::file_reference::describe() const -> std::string
+auto kdl::lib::file_reference::describe() const -> std::string
 {
     if (!valid()) {
         return "<INVALID_FILE_REFERENCE>";

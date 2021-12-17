@@ -1,0 +1,7 @@
+@project "Example Project" {
+    @author "Tom Hancocks";
+    @copyright "Copyright (c) 2021 Tom Hancocks";
+    @version "1.0";
+
+
+};

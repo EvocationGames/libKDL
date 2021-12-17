@@ -29,7 +29,7 @@
 #include <kdl/file/file_reference.hpp>
 #include <kdl/lexer/lexeme.hpp>
 
-namespace kdl
+namespace kdl::lib
 {
 
     class lexer

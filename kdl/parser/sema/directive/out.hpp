@@ -18,33 +18,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_FILE_SOURCE_FILE_HPP)
-#define KDL_FILE_SOURCE_FILE_HPP
+#if !defined(OUT_DIRECTIVE_PARSER_HPP)
+#define OUT_DIRECTIVE_PARSER_HPP
 
-#include <string>
-#include <memory>
+#include <kdl/parser/consumer/consumer.hpp>
 
-namespace kdl::lib
+namespace kdl::lib::sema::directive::out
 {
-
-    class source_file: public std::enable_shared_from_this<source_file>
-    {
-    private:
-        static constexpr const char * memory { "{*MEMORY*}" };
-
-        std::string m_file_path;
-        std::string m_source;
-        std::size_t m_source_size;
-
-    public:
-        explicit source_file(std::string source, std::string path = source_file::memory);
-
-        [[nodiscard]] auto source() const -> std::string;
-        [[nodiscard]] auto path() const -> std::string;
-
-        [[nodiscard]] auto size() const -> std::size_t;
-    };
-
+    auto parse(lexeme_consumer& consumer) -> void;
 }
 
-#endif //KDL_FILE_SOURCE_FILE_HPP
+#endif // OUT_DIRECTIVE_PARSER_HPP

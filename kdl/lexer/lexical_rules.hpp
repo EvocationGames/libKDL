@@ -22,7 +22,7 @@
 #define LEXICAL_RULES_HPP
 
 #include <iostream>
-namespace kdl::lexical_rule
+namespace kdl::lib::lexical_rule
 {
 
     template<char c>
@@ -150,7 +150,7 @@ namespace kdl::lexical_rule
 
     struct numeric
     {
-        typedef kdl::lexical_rule::range<'0', '9'> decimal;
+        typedef lexical_rule::range<'0', '9'> decimal;
 
         struct hexadecimal
         {

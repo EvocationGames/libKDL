@@ -18,33 +18,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_FILE_SOURCE_FILE_HPP)
-#define KDL_FILE_SOURCE_FILE_HPP
+#include <utility>
+#include <kdl/parser/parser.hpp>
+#include <kdl/lexer/lexer.hpp>
+#include <kdl/parser/sema/directive/out.hpp>
+#include <kdl/parser/sema/project/project.hpp>
 
-#include <string>
-#include <memory>
+// MARK: - Top Level Parser
 
-namespace kdl::lib
+auto kdl::lib::parser::parse(const std::shared_ptr<source_file> &source) -> void
 {
-
-    class source_file: public std::enable_shared_from_this<source_file>
-    {
-    private:
-        static constexpr const char * memory { "{*MEMORY*}" };
-
-        std::string m_file_path;
-        std::string m_source;
-        std::size_t m_source_size;
-
-    public:
-        explicit source_file(std::string source, std::string path = source_file::memory);
-
-        [[nodiscard]] auto source() const -> std::string;
-        [[nodiscard]] auto path() const -> std::string;
-
-        [[nodiscard]] auto size() const -> std::size_t;
-    };
-
+    parse(lexer(source).scan());
 }
 
-#endif //KDL_FILE_SOURCE_FILE_HPP
+auto kdl::lib::parser::parse(std::vector<lexeme> lexemes) -> void
+{
+    m_consumer = lexeme_consumer(std::move(lexemes));
+
+    while (!m_consumer.finished()) {
+
+        if (m_consumer.expect( expect(lexeme_type::directive, "project").t() )) {
+            auto project = sema::project::parse(m_consumer);
+            m_modules.emplace_back(project);
+        }
+        else if (m_consumer.expect( expect(lexeme_type::directive, "out").t() )) {
+            sema::directive::out::parse(m_consumer);
+        }
+        else {
+            throw std::runtime_error("Unexpected lexeme encountered.");
+        }
+
+        m_consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });
+    }
+}
+
+

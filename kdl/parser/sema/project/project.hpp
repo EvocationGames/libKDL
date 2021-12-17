@@ -18,33 +18,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_FILE_SOURCE_FILE_HPP)
-#define KDL_FILE_SOURCE_FILE_HPP
+#if !defined(KDL_PARSER_SEMA_PROJECT_HPP)
+#define KDL_PARSER_SEMA_PROJECT_HPP
 
-#include <string>
 #include <memory>
+#include <kdl/parser/consumer/consumer.hpp>
 
 namespace kdl::lib
 {
-
-    class source_file: public std::enable_shared_from_this<source_file>
-    {
-    private:
-        static constexpr const char * memory { "{*MEMORY*}" };
-
-        std::string m_file_path;
-        std::string m_source;
-        std::size_t m_source_size;
-
-    public:
-        explicit source_file(std::string source, std::string path = source_file::memory);
-
-        [[nodiscard]] auto source() const -> std::string;
-        [[nodiscard]] auto path() const -> std::string;
-
-        [[nodiscard]] auto size() const -> std::size_t;
-    };
-
+    class module;
 }
 
-#endif //KDL_FILE_SOURCE_FILE_HPP
+namespace kdl::lib::sema::project
+{
+    auto parse(lexeme_consumer& consumer) -> std::shared_ptr<module>;
+}
+
+#endif //KDL_PARSER_SEMA_PROJECT_PROJECT_HPP

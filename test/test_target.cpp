@@ -20,16 +20,21 @@
 
 #include <iostream>
 #include <kdl/lexer/lexer.hpp>
+#include <kdl/parser/parser.hpp>
 
 auto main(const int argc, const char **argv) -> int
 {
     if (argc > 1) {
         std::string command { argv[1] };
         if (command == "lexemes" && argc > 2) {
-            auto input = std::make_shared<kdl::source_file>("", std::string(argv[2]));
-            for (const auto& lx : kdl::lexer(input).scan(false)) {
+            auto input = std::make_shared<kdl::lib::source_file>("", std::string(argv[2]));
+            for (const auto& lx : kdl::lib::lexer(input).scan(false)) {
                 std::cout << lx.describe() << std::endl;
             }
+        }
+        else if (command == "schema" && argc > 2) {
+            auto input = std::make_shared<kdl::lib::source_file>("", std::string(argv[2]));
+            kdl::lib::parser().parse(input);
         }
         else {
             std::cerr << "unrecognised command: " << command << std::endl;

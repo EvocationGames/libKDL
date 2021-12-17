@@ -18,33 +18,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_FILE_SOURCE_FILE_HPP)
-#define KDL_FILE_SOURCE_FILE_HPP
+#if !defined(KDL_PARSER_PARSER_HPP)
+#define KDL_PARSER_PARSER_HPP
 
-#include <string>
+#include <vector>
 #include <memory>
+#include <kdl/schema/module.hpp>
+#include <kdl/file/source_file.hpp>
+#include <kdl/lexer/lexeme.hpp>
+#include <kdl/parser/consumer/consumer.hpp>
 
 namespace kdl::lib
 {
 
-    class source_file: public std::enable_shared_from_this<source_file>
+    class parser
     {
     private:
-        static constexpr const char * memory { "{*MEMORY*}" };
-
-        std::string m_file_path;
-        std::string m_source;
-        std::size_t m_source_size;
+        lexeme_consumer m_consumer { {} };
+        std::vector<std::shared_ptr<module>> m_modules;
 
     public:
-        explicit source_file(std::string source, std::string path = source_file::memory);
+        parser() = default;
 
-        [[nodiscard]] auto source() const -> std::string;
-        [[nodiscard]] auto path() const -> std::string;
-
-        [[nodiscard]] auto size() const -> std::size_t;
+        auto parse(const std::shared_ptr<source_file>& source) -> void;
+        auto parse(std::vector<lexeme> lexemes) -> void;
     };
 
 }
 
-#endif //KDL_FILE_SOURCE_FILE_HPP
+#endif //KDL_PARSER_PARSER_HPP
