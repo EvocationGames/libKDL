@@ -127,3 +127,11 @@ auto kdl::lib::module::type() const -> module_type
 {
     return m_type;
 }
+
+// MARK: - Binary Types
+
+auto kdl::lib::module::add_binary_type_definition(binary_type type) -> void
+{
+    // TODO: Check for existing binary type.
+    m_binary_type_definitions.emplace_back(std::move(type));
+}

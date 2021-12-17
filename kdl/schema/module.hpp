@@ -25,6 +25,7 @@
 #include <vector>
 #include <memory>
 #include <kdl/schema/module_type.hpp>
+#include <kdl/schema/binary_types/binary_type.hpp>
 
 namespace kdl::lib
 {
@@ -42,7 +43,7 @@ namespace kdl::lib
         std::string m_namespace;
         std::vector<std::string> m_authors;
         std::vector<std::string> m_copyright;
-        std::vector<int> m_binary_type_definitions;
+        std::vector<binary_type> m_binary_type_definitions;
         std::vector<int> m_template_definitions;
         std::vector<int> m_resource_type_definitions;
         std::vector<int> m_resource_declarations;
@@ -63,6 +64,8 @@ namespace kdl::lib
         [[nodiscard]] auto get_namespace(bool complete = true) const -> std::string;
 
         [[nodiscard]] auto type() const -> module_type;
+
+        auto add_binary_type_definition(binary_type type) -> void;
     };
 
 }

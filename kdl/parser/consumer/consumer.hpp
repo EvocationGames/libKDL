@@ -47,21 +47,21 @@ namespace kdl::lib
         auto advance(std::int32_t offset = 1) -> void;
 
         auto insert(std::vector<lexeme> lx, std::int32_t offset = 0) -> void;
-        auto push_lexemes(std::initializer_list<lexeme> ll) -> void;
+        auto push_lexemes(std::initializer_list<lexeme> lexemes) -> void;
         auto drop_lexemes() -> void;
 
         [[nodiscard]] auto peek(std::int32_t offset = 0) const -> lexeme;
         auto read(std::int32_t offset = 0) -> lexeme;
-        auto consume(const expect::function& fn) -> std::vector<lexeme>;
+        auto consume(const expect::function& expectation) -> std::vector<lexeme>;
 
-        auto expect(const expect::function& fn) -> bool;
-        auto expect_any(std::initializer_list<expect::function> fnlist) -> bool;
-        auto expect_any(std::vector<expect::function> fnlist) -> bool;
-        auto expect_all(std::initializer_list<expect::function> fnlist) -> bool;
-        auto expect_all(std::vector<expect::function> fnlist) -> bool;
+        auto expect(const expect::function& expectation) -> bool;
+        auto expect_any(std::initializer_list<expect::function> expectations) -> bool;
+        auto expect_any(std::vector<expect::function> expectations) -> bool;
+        auto expect_all(std::initializer_list<expect::function> expectations) -> bool;
+        auto expect_all(std::vector<expect::function> expectations) -> bool;
         [[nodiscard]] auto validate_expect() const -> bool;
 
-        auto assert_lexemes(std::initializer_list<expect::function> fnlist) -> void;
+        auto assert_lexemes(std::initializer_list<expect::function> expectations) -> void;
 
     };
 

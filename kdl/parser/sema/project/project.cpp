@@ -24,6 +24,7 @@
 #include <kdl/parser/sema/directive/version.hpp>
 #include <kdl/parser/sema/directive/copyright.hpp>
 #include <kdl/parser/sema/directive/out.hpp>
+#include <kdl/parser/sema/define/define.hpp>
 
 auto kdl::lib::sema::project::parse(lexeme_consumer& consumer) -> std::shared_ptr<module>
 {
@@ -38,6 +39,7 @@ auto kdl::lib::sema::project::parse(lexeme_consumer& consumer) -> std::shared_pt
     consumer.assert_lexemes({ expect(lexeme_type::lbrace).t() });
     while (consumer.expect({ expect(lexeme_type::rbrace).f() })) {
 
+        // DIRECTIVES
         if (consumer.expect({ expect(lexeme_type::directive, "author").t() })) {
             sema::directive::author::parse(consumer, project);
         }
@@ -48,8 +50,14 @@ auto kdl::lib::sema::project::parse(lexeme_consumer& consumer) -> std::shared_pt
             sema::directive::copyright::parse(consumer, project);
         }
         else if (consumer.expect({ expect(lexeme_type::directive, "out").t() })) {
-            sema::directive::copyright::parse(consumer, project);
+            sema::directive::out::parse(consumer);
         }
+
+        // FUNCTIONS
+        else if (consumer.expect({ expect(lexeme_type::identifier, "define").t() })) {
+            sema::define::parse(consumer, project);
+        }
+
         else {
             throw std::runtime_error("Unexpected token encountered in project.");
         }

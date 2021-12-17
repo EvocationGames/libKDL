@@ -126,7 +126,7 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
             inject_lexeme(construct_lexeme(lexeme_type::resource_ref));
         }
         else if (test(lexical_rule::numeric::decimal::contains)) {
-            lexeme_type number_type = lexeme_type::decimal;
+            lexeme_type number_type = lexeme_type::integer;
             if (peek(2) == "0x" || peek(2) == "0X") {
                 // Hexadecimal
                 advance(2);

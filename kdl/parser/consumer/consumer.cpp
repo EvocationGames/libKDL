@@ -68,9 +68,9 @@ auto kdl::lib::lexeme_consumer::insert(std::vector<lexeme> lx, std::int32_t offs
     }
 }
 
-auto kdl::lib::lexeme_consumer::push_lexemes(std::initializer_list<lexeme> ll) -> void
+auto kdl::lib::lexeme_consumer::push_lexemes(std::initializer_list<lexeme> lexemes) -> void
 {
-    m_pushed_lexemes = std::vector<lexeme>(ll);
+    m_pushed_lexemes = std::vector<lexeme>(lexemes);
 }
 
 auto kdl::lib::lexeme_consumer::drop_lexemes() -> void
@@ -103,10 +103,10 @@ auto kdl::lib::lexeme_consumer::read(std::int32_t offset) -> lexeme
     return lx;
 }
 
-auto kdl::lib::lexeme_consumer::consume(const expect::function& fn) -> std::vector<lexeme>
+auto kdl::lib::lexeme_consumer::consume(const expect::function& expectation) -> std::vector<lexeme>
 {
     std::vector<lexeme> v;
-    while (!finished() && fn(peek())) {
+    while (!finished() && expectation(peek())) {
         v.emplace_back(read());
     }
     return v;
@@ -114,34 +114,34 @@ auto kdl::lib::lexeme_consumer::consume(const expect::function& fn) -> std::vect
 
 // MARK: - Expectations
 
-auto kdl::lib::lexeme_consumer::expect(const expect::function& fn) -> bool
+auto kdl::lib::lexeme_consumer::expect(const expect::function& expectation) -> bool
 {
-    return (m_previous_expect_result = fn(peek()));
+    return (m_previous_expect_result = expectation(peek()));
 }
 
-auto kdl::lib::lexeme_consumer::expect_any(std::initializer_list<expect::function> fnlist) -> bool
+auto kdl::lib::lexeme_consumer::expect_any(std::initializer_list<expect::function> expectations) -> bool
 {
-    return expect_any(std::vector(fnlist));
+    return expect_any(std::vector(expectations));
 }
 
-auto kdl::lib::lexeme_consumer::expect_any(std::vector<expect::function> fnlist) -> bool
+auto kdl::lib::lexeme_consumer::expect_any(std::vector<expect::function> expectations) -> bool
 {
     auto lx = peek();
-    return (m_previous_expect_result = std::any_of(fnlist.begin(), fnlist.end(), [fnlist, lx] (const expect::function& fn) {
-        return fn(lx);
+    return (m_previous_expect_result = std::any_of(expectations.begin(), expectations.end(), [expectations, lx] (const expect::function& expectation) {
+        return expectation(lx);
     }));
 }
 
-auto kdl::lib::lexeme_consumer::expect_all(std::initializer_list<expect::function> fnlist) -> bool
+auto kdl::lib::lexeme_consumer::expect_all(std::initializer_list<expect::function> expectations) -> bool
 {
-    return expect_all(std::vector(fnlist));
+    return expect_all(std::vector(expectations));
 }
 
-auto kdl::lib::lexeme_consumer::expect_all(std::vector<expect::function> fnlist) -> bool
+auto kdl::lib::lexeme_consumer::expect_all(std::vector<expect::function> expectations) -> bool
 {
     m_previous_expect_result = true;
-    for (auto n = 0; n < fnlist.size(); ++n) {
-        if (!fnlist.at(n)(peek(n))) {
+    for (auto n = 0; n < expectations.size(); ++n) {
+        if (!expectations.at(n)(peek(n))) {
             m_previous_expect_result = false;
             break;
         }
@@ -154,10 +154,10 @@ auto kdl::lib::lexeme_consumer::validate_expect() const -> bool
     return m_previous_expect_result;
 }
 
-auto kdl::lib::lexeme_consumer::assert_lexemes(std::initializer_list<expect::function> fnlist) -> void
+auto kdl::lib::lexeme_consumer::assert_lexemes(std::initializer_list<expect::function> expectations) -> void
 {
-    if (!expect_all(std::vector(fnlist))) {
+    if (!expect_all(std::vector(expectations))) {
         throw std::logic_error("Invalid sequence of lexemes encountered.");
     }
-    advance(static_cast<std::int32_t>(fnlist.size()));
+    advance(static_cast<std::int32_t>(expectations.size()));
 }

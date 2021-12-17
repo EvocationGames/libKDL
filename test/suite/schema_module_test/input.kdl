@@ -1,7 +1,24 @@
+
 @project "Example Project" {
     @author "Tom Hancocks";
     @copyright "Copyright (c) 2021 Tom Hancocks";
     @version "1.0";
 
+    define(*type "DWRD") {
+        isa = integer;
+        size = 2;
+        is_signed;
+    };
 
+    define(*type "CSTR") {
+        isa = string;
+        size = null_terminated;
+        char = macroman;
+    };
+
+    define(*type "UTF8") {
+        isa = string;
+        size = null_terminated;
+        char = utf8;
+    };
 };
