@@ -22,7 +22,15 @@
 #include <kdl/parser/parser.hpp>
 #include <kdl/lexer/lexer.hpp>
 #include <kdl/parser/sema/directive/out.hpp>
-#include <kdl/parser/sema/project/project.hpp>
+#include <kdl/parser/sema/module/module.hpp>
+#include <kdl/schema/namespace.hpp>
+
+namespace kdl::lib::spec::keyword
+{
+    constexpr const char *project { "project" };
+    constexpr const char *module { "module" };
+    constexpr const char *out { "out" };
+};
 
 // MARK: - Top Level Parser
 
@@ -33,15 +41,19 @@ auto kdl::lib::parser::parse(const std::shared_ptr<source_file> &source) -> void
 
 auto kdl::lib::parser::parse(std::vector<lexeme> lexemes) -> void
 {
+    m_global_namespace = std::make_shared<name_space>();
     m_consumer = lexeme_consumer(std::move(lexemes));
 
     while (!m_consumer.finished()) {
 
-        if (m_consumer.expect( expect(lexeme_type::directive, "project").t() )) {
-            auto project = sema::project::parse(m_consumer);
-            m_modules.emplace_back(project);
+        if (m_consumer.expect_any({
+            expect(lexeme_type::directive, spec::keyword::project).t(),
+            expect(lexeme_type::directive, spec::keyword::module).t()
+        })) {
+            auto module = sema::module::parse(m_consumer, m_global_namespace);
+            m_modules.emplace_back(module);
         }
-        else if (m_consumer.expect( expect(lexeme_type::directive, "out").t() )) {
+        else if (m_consumer.expect( expect(lexeme_type::directive, spec::keyword::out).t() )) {
             sema::directive::out::parse(m_consumer);
         }
         else {

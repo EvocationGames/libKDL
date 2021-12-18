@@ -22,8 +22,8 @@
 #define KDL_SCHEMA_BINARY_TYPE_HPP
 
 #include <string>
-#include <kdl/schema/binary_types/isa.hpp>
-#include <kdl/schema/binary_types/char_encoding.hpp>
+#include <kdl/schema/binary_type/isa.hpp>
+#include <kdl/schema/binary_type/char_encoding.hpp>
 
 namespace kdl::lib
 {
@@ -39,7 +39,7 @@ namespace kdl::lib
         binary_type_char_encoding m_encoding { binary_type_char_encoding::macroman };
 
     public:
-        explicit binary_type(std::string name);
+        explicit binary_type(const std::string& name);
 
         auto set_isa(binary_type_isa isa) -> void;
         auto set_signed(bool f) -> void;

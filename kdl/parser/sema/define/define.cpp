@@ -22,13 +22,22 @@
 #include <functional>
 #include <kdl/parser/sema/define/define.hpp>
 #include <kdl/parser/sema/define/binary_type.hpp>
+#include <kdl/parser/sema/define/binary_template.hpp>
 #include <kdl/schema/module.hpp>
-#include <kdl/schema/binary_types/binary_type.hpp>
+#include <kdl/schema/binary_type/binary_type.hpp>
+#include <kdl/schema/binary_template/binary_template.hpp>
 
-auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_ptr<module> &project) -> void
+namespace kdl::lib::spec::keywords
+{
+    constexpr const char *define { "define" };
+    constexpr const char *type { "type" };
+    constexpr const char *tmpl { "template" };
+}
+
+auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_ptr<module> &module) -> void
 {
     consumer.assert_lexemes({
-        expect(lexeme_type::identifier, "define").t(),
+        expect(lexeme_type::identifier, spec::keywords::define).t(),
         expect(lexeme_type::lparen).t()
     });
 
@@ -37,15 +46,24 @@ auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_
     if (consumer.expect( expect(lexeme_type::star).t() )) {
         consumer.advance();
 
-        if (consumer.expect_all({ expect(lexeme_type::identifier, "type").t(), expect(lexeme_type::string).t() })) {
+        if (consumer.expect_all({ expect(lexeme_type::identifier, spec::keywords::type).t(), expect(lexeme_type::identifier).t() })) {
             // Binary Type Definition
             consumer.advance();
-            std::string type_name { consumer.read().string_value() };
-            struct binary_type type { type_name };
-
-            continuation = [&consumer, &type, project] {
+            auto name = consumer.read();
+            continuation = [&consumer, name, module] {
+                auto type = std::make_shared<struct binary_type>(name.string_value());
                 sema::define::binary_type::parse(consumer, type);
-                project->add_binary_type_definition(type);
+                module->add_binary_type_definition(type);
+            };
+        }
+        else if (consumer.expect_all({ expect(lexeme_type::identifier, spec::keywords::tmpl).t(), expect(lexeme_type::identifier).t() })) {
+            // Binary Template Definition
+            consumer.advance();
+            auto name = consumer.read();
+            continuation = [&consumer, name, module] {
+                auto tmpl = std::make_shared<struct binary_template>(name.string_value());
+                sema::define::binary_template::parse(consumer, tmpl, module);
+                module->add_binary_template_definition(tmpl);
             };
         }
         else {

@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_PARSER_SEMA_DEFINE_HPP)
-#define KDL_PARSER_SEMA_DEFINE_HPP
+#if !defined(KDL_PARSER_SEMA_MODULE_HPP)
+#define KDL_PARSER_SEMA_MODULE_HPP
 
 #include <memory>
 #include <kdl/parser/consumer/consumer.hpp>
@@ -27,11 +27,12 @@
 namespace kdl::lib
 {
     class module;
+    class name_space;
 }
 
-namespace kdl::lib::sema::define
+namespace kdl::lib::sema::module
 {
-    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module) -> void;
+    auto parse(lexeme_consumer& consumer, const std::weak_ptr<name_space>& ns) -> std::shared_ptr<class module>;
 }
 
-#endif //KDL_PARSER_SEMA_DEFINE_DEFINE_HPP
+#endif //KDL_PARSER_SEMA_PROJECT_PROJECT_HPP

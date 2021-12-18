@@ -23,18 +23,20 @@
 
 #include <vector>
 #include <memory>
-#include <kdl/schema/module.hpp>
 #include <kdl/file/source_file.hpp>
 #include <kdl/lexer/lexeme.hpp>
 #include <kdl/parser/consumer/consumer.hpp>
 
 namespace kdl::lib
 {
+    class module;
+    class name_space;
 
     class parser
     {
     private:
         lexeme_consumer m_consumer { {} };
+        std::shared_ptr<name_space> m_global_namespace;
         std::vector<std::shared_ptr<module>> m_modules;
 
     public:

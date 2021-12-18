@@ -18,20 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_PARSER_SEMA_DEFINE_HPP)
-#define KDL_PARSER_SEMA_DEFINE_HPP
+#include <utility>
+#include <kdl/schema/binary_template/binary_template_field.hpp>
+#include <kdl/schema/binary_type/binary_type.hpp>
 
-#include <memory>
-#include <kdl/parser/consumer/consumer.hpp>
+// MARK: - Construction
 
-namespace kdl::lib
+kdl::lib::binary_template_field::binary_template_field(const std::shared_ptr<binary_type>& type, const std::string& name)
+    : m_type(type), m_name(name)
 {
-    class module;
+
 }
 
-namespace kdl::lib::sema::define
+// MARK: - Accessors
+
+auto kdl::lib::binary_template_field::type() const -> std::shared_ptr<binary_type>
 {
-    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module) -> void;
+    return m_type;
 }
 
-#endif //KDL_PARSER_SEMA_DEFINE_DEFINE_HPP
+auto kdl::lib::binary_template_field::name() const -> std::string
+{
+    return m_name;
+}
+

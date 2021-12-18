@@ -21,11 +21,12 @@
 #include <utility>
 #include <kdl/schema/module.hpp>
 #include <kdl/parser/parser.hpp>
+#include <kdl/schema/namespace.hpp>
 
 // MARK: - Constructor
 
-kdl::lib::module::module(std::string name, module_type type, const std::weak_ptr<module>& parent)
-    : m_module_name(std::move(name)), m_type(type), m_parent(parent)
+kdl::lib::module::module(const std::string& name, module_type type, const std::weak_ptr<module>& parent)
+    : m_module_name(name), m_type(type), m_parent(parent)
 {
     if (auto p = m_parent.lock()) {
         p->add_submodule(shared_from_this());
@@ -34,17 +35,12 @@ kdl::lib::module::module(std::string name, module_type type, const std::weak_ptr
 
 // MARK: - Setters
 
-auto kdl::lib::module::set_parser(const std::weak_ptr<parser>& p) -> void
-{
-    m_parser = p;
-}
-
 auto kdl::lib::module::set_version(const std::string& version) -> void
 {
     m_version = version;
 }
 
-auto kdl::lib::module::set_namespace(const std::string& ns) -> void
+auto kdl::lib::module::set_namespace(const std::weak_ptr<name_space>& ns) -> void
 {
     m_namespace = ns;
 }
@@ -111,16 +107,11 @@ auto kdl::lib::module::authors(bool complete) const -> std::vector<std::string>
     return authors;
 }
 
-auto kdl::lib::module::get_namespace(bool complete) const -> std::string
+auto kdl::lib::module::get_namespace() -> std::weak_ptr<name_space>
 {
-    std::string ns = m_namespace;
-    if (complete) {
-        if (auto parent = m_parent.lock()) {
-            auto parent_ns = parent->get_namespace(complete);
-            ns.insert(ns.begin(), parent_ns.begin(), parent_ns.end());
-        }
-    }
-    return ns;
+    return m_namespace.expired()
+        ? (m_parent.expired() ? std::weak_ptr<name_space>() : m_parent.lock()->get_namespace())
+        : m_namespace;
 }
 
 auto kdl::lib::module::type() const -> module_type
@@ -130,8 +121,39 @@ auto kdl::lib::module::type() const -> module_type
 
 // MARK: - Binary Types
 
-auto kdl::lib::module::add_binary_type_definition(binary_type type) -> void
+auto kdl::lib::module::add_binary_type_definition(const std::shared_ptr<binary_type>& type) -> void
 {
     // TODO: Check for existing binary type.
-    m_binary_type_definitions.emplace_back(std::move(type));
+    m_binary_type_definitions.emplace_back(type);
+
+    if (auto ns = get_namespace().lock()) {
+        ns->register_binary_type(type);
+    }
+}
+
+auto kdl::lib::module::binary_type_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<binary_type>
+{
+    if (path.size() == 1 && path.at(0) == "this") {
+        for (const auto& type : m_binary_type_definitions) {
+            if (type->name() == name) {
+                return type;
+            }
+        }
+        return {};
+    }
+
+    if (auto ns = get_namespace().lock()) {
+        return ns->binary_type_named(name, path);
+    }
+    else {
+        return {};
+    }
+}
+
+// MARK: - Binary Templates
+
+auto kdl::lib::module::add_binary_template_definition(const std::shared_ptr<binary_template>& tmpl) -> void
+{
+    // TODO: Check for existing binary template
+    m_template_definitions.emplace_back(tmpl);
 }

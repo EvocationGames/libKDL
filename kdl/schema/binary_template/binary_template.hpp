@@ -18,20 +18,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_PARSER_SEMA_PROJECT_HPP)
-#define KDL_PARSER_SEMA_PROJECT_HPP
+#if !defined(KDL_SCHEMA_BINARY_TEMPLATE_HPP)
+#define KDL_SCHEMA_BINARY_TEMPLATE_HPP
 
+#include <string>
+#include <vector>
 #include <memory>
-#include <kdl/parser/consumer/consumer.hpp>
+#include <kdl/schema/binary_type/binary_type.hpp>
 
 namespace kdl::lib
 {
-    class module;
+    struct binary_template_field;
+
+    struct binary_template
+    {
+    private:
+        std::string m_name;
+        std::vector<std::shared_ptr<binary_template_field>> m_fields;
+
+    public:
+        explicit binary_template(const std::string& name);
+
+        auto add_field(const std::shared_ptr<binary_type>& type, const std::string& name) -> void;
+
+        [[nodiscard]] auto field_count() const -> std::size_t;
+        [[nodiscard]] auto field_at(std::size_t i) const -> std::shared_ptr<binary_template_field>;
+        [[nodiscard]] auto field_named(const std::string& name) const -> std::shared_ptr<binary_template_field>;
+    };
+
 }
 
-namespace kdl::lib::sema::project
-{
-    auto parse(lexeme_consumer& consumer) -> std::shared_ptr<module>;
-}
-
-#endif //KDL_PARSER_SEMA_PROJECT_PROJECT_HPP
+#endif //KDL_SCHEMA_BINARY_TEMPLATE_BINARY_TEMPLATE_HPP

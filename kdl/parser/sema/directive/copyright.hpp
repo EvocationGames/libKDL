@@ -31,7 +31,7 @@ namespace kdl::lib
 
 namespace kdl::lib::sema::directive::copyright
 {
-    auto parse(lexeme_consumer& consumer, const std::shared_ptr<module>& project) -> void;
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& project) -> void;
 }
 
 #endif // OUT_DIRECTIVE_PARSER_HPP

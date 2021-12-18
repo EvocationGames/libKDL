@@ -1,24 +1,25 @@
+@module "Modern" {
+    @namespace Modern;
 
-@project "Example Project" {
-    @author "Tom Hancocks";
-    @copyright "Copyright (c) 2021 Tom Hancocks";
-    @version "1.0";
-
-    define(*type "DWRD") {
+    define(*type UInt16) {
         isa = integer;
-        size = 2;
+        size = 4;
         is_signed;
     };
 
-    define(*type "CSTR") {
-        isa = string;
-        size = null_terminated;
-        char = macroman;
+};
+
+@project "Test Project" {
+    ` No defined namespace, means it belongs to its parents namespace.
+
+    define(*type UInt16) {
+        isa = integer;
+        size = 2;
     };
 
-    define(*type "UTF8") {
-        isa = string;
-        size = null_terminated;
-        char = utf8;
+    define(*template NumberPairTemplate) {
+        Modern::UInt16 First;
+        UInt16 Second;
     };
+
 };

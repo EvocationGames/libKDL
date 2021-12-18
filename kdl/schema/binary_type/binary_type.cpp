@@ -18,12 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/binary_types/binary_type.hpp>
+#include <kdl/schema/binary_type/binary_type.hpp>
 
 // MARK: - Construction
 
-kdl::lib::binary_type::binary_type(std::string name)
-    : m_name(std::move(name))
+kdl::lib::binary_type::binary_type(const std::string& name)
+    : m_name(name)
 {
 
 }

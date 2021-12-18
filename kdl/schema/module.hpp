@@ -24,36 +24,36 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <optional>
 #include <kdl/schema/module_type.hpp>
-#include <kdl/schema/binary_types/binary_type.hpp>
+#include <kdl/schema/binary_type/binary_type.hpp>
+#include <kdl/schema/binary_template/binary_template.hpp>
 
 namespace kdl::lib
 {
-    class parser;
+    class name_space;
 
     class module: public std::enable_shared_from_this<module>
     {
     private:
         module_type m_type { module_type::general };
-        std::weak_ptr<parser> m_parser;
+        std::weak_ptr<name_space> m_namespace;
         std::weak_ptr<module> m_parent;
         std::vector<std::shared_ptr<module>> m_submodules;
         std::string m_module_name;
         std::string m_version;
-        std::string m_namespace;
         std::vector<std::string> m_authors;
         std::vector<std::string> m_copyright;
-        std::vector<binary_type> m_binary_type_definitions;
-        std::vector<int> m_template_definitions;
+        std::vector<std::shared_ptr<binary_type>> m_binary_type_definitions;
+        std::vector<std::shared_ptr<binary_template>> m_template_definitions;
         std::vector<int> m_resource_type_definitions;
         std::vector<int> m_resource_declarations;
 
     public:
-        explicit module(std::string name, module_type = module_type::general, const std::weak_ptr<module>& parent = {});
+        explicit module(const std::string& name, module_type = module_type::general, const std::weak_ptr<module>& parent = {});
 
-        auto set_parser(const std::weak_ptr<parser>& p) -> void;
         auto set_version(const std::string& version) -> void;
-        auto set_namespace(const std::string& ns) -> void;
+        auto set_namespace(const std::weak_ptr<name_space>& ns) -> void;
         auto add_author(const std::string& author) -> void;
         auto add_copyright(const std::string& copy) -> void;
         auto add_submodule(const std::shared_ptr<module>& submodule) -> void;
@@ -61,11 +61,14 @@ namespace kdl::lib
         [[nodiscard]] auto submodule_named(const std::string&) const -> std::weak_ptr<module>;
         [[nodiscard]] auto copyright(bool complete = true) const -> std::vector<std::string>;
         [[nodiscard]] auto authors(bool complete = true) const -> std::vector<std::string>;
-        [[nodiscard]] auto get_namespace(bool complete = true) const -> std::string;
+        [[nodiscard]] auto get_namespace() -> std::weak_ptr<name_space>;
 
         [[nodiscard]] auto type() const -> module_type;
 
-        auto add_binary_type_definition(binary_type type) -> void;
+        auto add_binary_type_definition(const std::shared_ptr<binary_type>& type) -> void;
+        [[nodiscard]] auto binary_type_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<binary_type>;
+
+        auto add_binary_template_definition(const std::shared_ptr<binary_template>& tmpl) -> void;
     };
 
 }

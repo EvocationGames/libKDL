@@ -23,10 +23,15 @@
 
 #include <memory>
 #include <kdl/parser/consumer/consumer.hpp>
-#include <kdl/schema/binary_types/binary_type.hpp>
+
+namespace kdl::lib
+{
+    struct binary_type;
+}
 
 namespace kdl::lib::sema::define::binary_type
 {
-    auto parse(lexeme_consumer& consumer, struct binary_type& type) -> void;
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<struct binary_type>& type) -> void;
 }
+
 #endif //KDL_PARSER_SEMA_DEFINE_BINARY_TYPE_HPP

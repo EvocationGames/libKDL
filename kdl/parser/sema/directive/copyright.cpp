@@ -26,7 +26,6 @@ auto kdl::lib::sema::directive::copyright::parse(lexeme_consumer &consumer, cons
     consumer.assert_lexemes({ expect(lexeme_type::directive, "copyright").t() });
 
     while (consumer.expect( expect(lexeme_type::semicolon).f() )) {
-        std::string copyright { consumer.read().string_value() };
-        project->add_copyright(copyright);
+        project->add_copyright(consumer.read().string_value());
     }
 }

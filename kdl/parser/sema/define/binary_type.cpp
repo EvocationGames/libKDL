@@ -21,77 +21,97 @@
 #include <stdexcept>
 #include <string>
 #include <kdl/parser/sema/define/binary_type.hpp>
+#include <kdl/schema/binary_type/binary_type.hpp>
 
-auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, struct binary_type &type) -> void
+namespace kdl::lib::spec::keyword
+{
+    constexpr const char *isa { "isa" };
+    constexpr const char *integer { "integer" };
+    constexpr const char *string { "string" };
+    constexpr const char *size { "size" };
+    constexpr const char *null_terminated { "null_terminated" };
+    constexpr const char *counted { "counted" };
+    constexpr const char *chr { "char" };
+    constexpr const char *is_signed { "is_signed" };
+}
+
+namespace kdl::lib::sema::define::binary_type::encoding
+{
+    constexpr const char *ascii { "ascii" };
+    constexpr const char *macroman { "macroman" };
+    constexpr const char *utf8 { "utf8" };
+}
+
+auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const std::shared_ptr<struct binary_type>& type) -> void
 {
     while (consumer.expect( expect(lexeme_type::rbrace).f() )) {
 
         if (consumer.expect_all({
-            expect(lexeme_type::identifier, "isa").t(),
+            expect(lexeme_type::identifier, spec::keyword::isa).t(),
             expect(lexeme_type::equals).t(),
             expect(lexeme_type::identifier).t()
         })) {
             consumer.advance(2);
-            std::string isa_type { consumer.read().string_value() };
-            if (isa_type == "integer") {
-                type.set_isa(binary_type_isa::integer);
+            auto isa_type = consumer.read().string_value();
+            if (isa_type == spec::keyword::integer) {
+                type->set_isa(binary_type_isa::integer);
             }
-            else if (isa_type == "string") {
-                type.set_isa(binary_type_isa::string);
+            else if (isa_type == spec::keyword::string) {
+                type->set_isa(binary_type_isa::string);
             }
             else {
                 throw std::runtime_error("Unrecognised binary type isa '" + isa_type + "'");
             }
         }
         else if (consumer.expect_all({
-            expect(lexeme_type::identifier, "size").t(),
+            expect(lexeme_type::identifier, spec::keyword::size).t(),
             expect(lexeme_type::equals).t(),
             expect(lexeme_type::integer).t()
         })) {
             consumer.advance(2);
-            type.set_size(consumer.read().uint32_value());
+            type->set_size(consumer.read().uint32_value());
         }
         else if (consumer.expect_all({
-            expect(lexeme_type::identifier, "size").t(),
+            expect(lexeme_type::identifier, spec::keyword::size).t(),
             expect(lexeme_type::equals).t(),
-            expect(lexeme_type::identifier, "null_terminated").t()
+            expect(lexeme_type::identifier, spec::keyword::null_terminated).t()
         })) {
             consumer.advance(3);
-            type.set_size(0);
-            type.set_null_terminated(true);
+            type->set_size(0);
+            type->set_null_terminated(true);
         }
         else if (consumer.expect_all({
-            expect(lexeme_type::identifier, "size").t(),
+            expect(lexeme_type::identifier, spec::keyword::size).t(),
             expect(lexeme_type::equals).t(),
-            expect(lexeme_type::identifier, "counted").t(),
+            expect(lexeme_type::identifier, spec::keyword::counted).t(),
             expect(lexeme_type::integer).t()
         })) {
             consumer.advance(3);
-            type.set_count_width(consumer.read().uint32_value());
+            type->set_count_width(consumer.read().uint32_value());
         }
         else if (consumer.expect_all({
-            expect(lexeme_type::identifier, "char").t(),
+            expect(lexeme_type::identifier, spec::keyword::chr).t(),
             expect(lexeme_type::equals).t(),
             expect(lexeme_type::identifier).t()
         })) {
             consumer.advance(2);
-            std::string enc_type { consumer.read().string_value() };
-            if (enc_type == "ascii") {
-                type.set_char_encoding(binary_type_char_encoding::ascii);
+            auto enc_type = consumer.read().string_value();
+            if (enc_type == encoding::ascii) {
+                type->set_char_encoding(binary_type_char_encoding::ascii);
             }
-            else if (enc_type == "macroman") {
-                type.set_char_encoding(binary_type_char_encoding::macroman);
+            else if (enc_type == encoding::macroman) {
+                type->set_char_encoding(binary_type_char_encoding::macroman);
             }
-            else if (enc_type == "utf8") {
-                type.set_char_encoding(binary_type_char_encoding::utf8);
+            else if (enc_type == encoding::utf8) {
+                type->set_char_encoding(binary_type_char_encoding::utf8);
             }
             else {
                 throw std::runtime_error("Unrecognised binary type character encoding type '" + enc_type + "'");
             }
         }
-        else if (consumer.expect( expect(lexeme_type::identifier, "is_signed").t() )) {
+        else if (consumer.expect( expect(lexeme_type::identifier, spec::keyword::is_signed).t() )) {
             consumer.advance();
-            type.set_signed(true);
+            type->set_signed(true);
         }
 
         consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });

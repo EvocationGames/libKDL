@@ -26,7 +26,6 @@ auto kdl::lib::sema::directive::author::parse(lexeme_consumer &consumer, const s
     consumer.assert_lexemes({ expect(lexeme_type::directive, "author").t() });
 
     while (consumer.expect( expect(lexeme_type::semicolon).f() )) {
-        std::string author { consumer.read().string_value() };
-        project->add_author(author);
+        project->add_author(consumer.read().string_value());
     }
 }

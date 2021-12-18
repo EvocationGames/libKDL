@@ -25,7 +25,7 @@ namespace kdl::lib
 {
     enum class module_type : int
     {
-        project, component, general
+        project, module, general
     };
 }
 

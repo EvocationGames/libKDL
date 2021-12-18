@@ -29,6 +29,5 @@ auto kdl::lib::sema::directive::version::parse(lexeme_consumer &consumer, const 
         throw std::runtime_error("Expected string for version.");
     }
 
-    std::string version { consumer.read().string_value() };
-    project->set_version(version);
+    project->set_version(consumer.read().string_value());
 }
