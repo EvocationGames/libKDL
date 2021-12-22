@@ -28,6 +28,7 @@
 #include <kdl/schema/module_type.hpp>
 #include <kdl/schema/binary_type/binary_type.hpp>
 #include <kdl/schema/binary_template/binary_template.hpp>
+#include <kdl/schema/resource_type/resource_type.hpp>
 
 namespace kdl::lib
 {
@@ -46,7 +47,7 @@ namespace kdl::lib
         std::vector<std::string> m_copyright;
         std::vector<std::shared_ptr<binary_type>> m_binary_type_definitions;
         std::vector<std::shared_ptr<binary_template>> m_template_definitions;
-        std::vector<int> m_resource_type_definitions;
+        std::vector<std::shared_ptr<resource_type>> m_resource_type_definitions;
         std::vector<int> m_resource_declarations;
 
     public:
@@ -69,6 +70,9 @@ namespace kdl::lib
         [[nodiscard]] auto binary_type_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<binary_type>;
 
         auto add_binary_template_definition(const std::shared_ptr<binary_template>& tmpl) -> void;
+        [[nodiscard]] auto binary_template_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<binary_template>;
+
+        auto add_resource_type_definition(const std::shared_ptr<resource_type>& type) -> void;
     };
 
 }

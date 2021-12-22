@@ -18,14 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdexcept>
 #include <functional>
 #include <kdl/parser/sema/define/define.hpp>
 #include <kdl/parser/sema/define/binary_type.hpp>
 #include <kdl/parser/sema/define/binary_template.hpp>
+#include <kdl/parser/sema/define/resource_type.hpp>
 #include <kdl/schema/module.hpp>
 #include <kdl/schema/binary_type/binary_type.hpp>
 #include <kdl/schema/binary_template/binary_template.hpp>
+#include <kdl/schema/resource_type/resource_type.hpp>
+#include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keywords
 {
@@ -46,7 +48,10 @@ auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_
     if (consumer.expect( expect(lexeme_type::star).t() )) {
         consumer.advance();
 
-        if (consumer.expect_all({ expect(lexeme_type::identifier, spec::keywords::type).t(), expect(lexeme_type::identifier).t() })) {
+        if (consumer.expect_all({
+            expect(lexeme_type::identifier, spec::keywords::type).t(),
+            expect(lexeme_type::identifier).t()
+        })) {
             // Binary Type Definition
             consumer.advance();
             auto name = consumer.read();
@@ -56,7 +61,10 @@ auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_
                 module->add_binary_type_definition(type);
             };
         }
-        else if (consumer.expect_all({ expect(lexeme_type::identifier, spec::keywords::tmpl).t(), expect(lexeme_type::identifier).t() })) {
+        else if (consumer.expect_all({
+            expect(lexeme_type::identifier, spec::keywords::tmpl).t(),
+            expect(lexeme_type::identifier).t()
+        })) {
             // Binary Template Definition
             consumer.advance();
             auto name = consumer.read();
@@ -67,11 +75,26 @@ auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_
             };
         }
         else {
-            throw std::runtime_error("Unexpected definition type provided.");
+            report::error(consumer.peek(), "Unexpected definition type provided.");
         }
     }
+    else if (consumer.expect_all({
+        expect(lexeme_type::identifier).t(),
+        expect(lexeme_type::colon).t(),
+        expect(lexeme_type::string).t()
+    })) {
+        // Resource Type Definition
+        auto name = consumer.read();
+        consumer.advance();
+        auto code = consumer.read();
+        continuation = [&consumer, name, code, module] {
+            auto type = std::make_shared<struct resource_type>(name.string_value(), code.string_value());
+            sema::define::resource_type::parse(consumer, type, module);
+            module->add_resource_type_definition(type);
+        };
+    }
     else {
-        throw std::runtime_error("Unexpected definition type provided.");
+        report::error(consumer.peek(), "Unexpected token in definition found.");
     }
 
     consumer.assert_lexemes({

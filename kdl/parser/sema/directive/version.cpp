@@ -20,13 +20,14 @@
 
 #include <kdl/parser/sema/directive/version.hpp>
 #include <kdl/schema/module.hpp>
+#include <kdl/report/reporting.hpp>
 
 auto kdl::lib::sema::directive::version::parse(lexeme_consumer &consumer, const std::shared_ptr<module>& project) -> void
 {
     consumer.assert_lexemes({ expect(lexeme_type::directive, "version").t() });
 
     if (!consumer.expect( expect(lexeme_type::string).t() )) {
-        throw std::runtime_error("Expected string for version.");
+        report::warn(consumer.peek(), "Expected string for version.");
     }
 
     project->set_version(consumer.read().string_value());

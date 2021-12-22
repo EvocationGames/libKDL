@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #include <kdl/parser/consumer/consumer.hpp>
+#include <kdl/report/reporting.hpp>
 
 // MARK: - Construction
 
@@ -84,7 +85,7 @@ auto kdl::lib::lexeme_consumer::peek(std::int32_t offset) const -> lexeme
         return m_pushed_lexemes.at(offset);
     }
     if (finished(1, offset)) {
-        throw std::logic_error("attempted to access lexeme beyond end of stream.");
+        report::error(m_lexemes.at(m_lexemes.size() - 1), "Attempted to access lexeme beyond end of stream.");
     }
     return m_lexemes.at(m_cursor + offset);
 }
@@ -157,7 +158,7 @@ auto kdl::lib::lexeme_consumer::validate_expect() const -> bool
 auto kdl::lib::lexeme_consumer::assert_lexemes(std::initializer_list<expect::function> expectations) -> void
 {
     if (!expect_all(std::vector(expectations))) {
-        throw std::logic_error("Invalid sequence of lexemes encountered.");
+        report::error(peek(), "Invalid sequence of lexemes encountered.");
     }
     advance(static_cast<std::int32_t>(expectations.size()));
 }

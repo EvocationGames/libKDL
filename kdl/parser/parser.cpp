@@ -24,6 +24,7 @@
 #include <kdl/parser/sema/directive/out.hpp>
 #include <kdl/parser/sema/module/module.hpp>
 #include <kdl/schema/namespace.hpp>
+#include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keyword
 {
@@ -57,7 +58,7 @@ auto kdl::lib::parser::parse(std::vector<lexeme> lexemes) -> void
             sema::directive::out::parse(m_consumer);
         }
         else {
-            throw std::runtime_error("Unexpected lexeme encountered.");
+            report::error(m_consumer.peek(), "Unexpected lexeme encountered.");
         }
 
         m_consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });

@@ -26,6 +26,7 @@
 #include <kdl/parser/sema/directive/out.hpp>
 #include <kdl/parser/sema/define/define.hpp>
 #include <kdl/schema/namespace.hpp>
+#include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keywords
 {
@@ -45,19 +46,19 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
         expect(lexeme_type::directive).t(),
         expect(lexeme_type::string).t()
     })) {
-        throw std::runtime_error("Unexpected token sequence encountered.");
+        report::error(consumer.peek(), "Unexpected token sequence encountered.");
     }
 
     std::shared_ptr<class module> module;
-    auto directive = consumer.read().string_value();
-    if (directive == spec::keywords::project) {
+    auto directive = consumer.read();
+    if (directive.string_value() == spec::keywords::project) {
         module = std::make_shared<class module>(consumer.read().string_value(), module_type::project);
     }
-    else if (directive == spec::keywords::module) {
+    else if (directive.string_value() == spec::keywords::module) {
         module = std::make_shared<class module>(consumer.read().string_value(), module_type::module);
     }
     else {
-        throw std::runtime_error("Unexpected directive encountered.");
+        report::error(directive, "Unexpected directive.");
     }
 
     // Assign the namespace that we've been provided, until the user sets one up.
@@ -73,7 +74,7 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
         })) {
             consumer.advance();
             if (module->get_namespace().expired()) {
-                throw std::runtime_error("Module namespace is missing. This is a fatal error.");
+                report::error(consumer.peek(), "Module namespace is missing. This is a fatal error.");
             }
             auto parent = module->get_namespace().lock();
             module->set_namespace(parent->create(consumer.read().string_value()));
@@ -97,7 +98,7 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
         }
 
         else {
-            throw std::runtime_error("Unexpected token encountered in module.");
+            report::error(consumer.peek(), "Unexpected token encountered in module.");
         }
 
         consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });

@@ -47,6 +47,8 @@ namespace kdl::lib
         [[nodiscard]] auto line() const -> std::size_t;
 
         [[nodiscard]] auto describe() const -> std::string;
+
+        [[nodiscard]] auto complete_source_line() const -> std::string;
     };
 }
 

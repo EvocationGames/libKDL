@@ -22,6 +22,7 @@
 #define KDL_SCHEMA_BINARY_TYPE_HPP
 
 #include <string>
+#include <memory>
 #include <kdl/schema/binary_type/isa.hpp>
 #include <kdl/schema/binary_type/char_encoding.hpp>
 

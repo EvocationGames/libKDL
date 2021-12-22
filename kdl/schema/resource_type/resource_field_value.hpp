@@ -18,36 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_SCHEMA_BINARY_TEMPLATE_HPP)
-#define KDL_SCHEMA_BINARY_TEMPLATE_HPP
+#if !defined(KDL_SCHEMA_RESOURCE_FIELD_VALUE_HPP)
+#define KDL_SCHEMA_RESOURCE_FIELD_VALUE_HPP
 
 #include <string>
-#include <vector>
 #include <memory>
-#include <kdl/schema/binary_type/binary_type.hpp>
+#include <vector>
+#include <optional>
+#include <kdl/lexer/lexeme.hpp>
 
 namespace kdl::lib
 {
     struct binary_template_field;
+    struct resource_field_symbol;
 
-    struct binary_template
+    struct resource_field_value
     {
     private:
-        std::string m_name;
-        std::vector<std::shared_ptr<binary_template_field>> m_fields;
+        std::string m_binary_template_field_name;
+        std::weak_ptr<struct binary_template_field> m_binary_template_field;
+        std::vector<std::shared_ptr<struct resource_field_symbol>> m_symbols;
+        std::optional<lexeme> m_default_value;
 
     public:
-        explicit binary_template(const std::string& name);
+        explicit resource_field_value(const std::shared_ptr<struct binary_template_field>& field);
 
-        auto add_field(const std::shared_ptr<binary_type>& type, const std::string& name) -> void;
+        auto set_default_value(const lexeme& lx) -> void;
 
         [[nodiscard]] auto name() const -> std::string;
+        [[nodiscard]] auto default_value() const -> std::optional<lexeme>;
 
-        [[nodiscard]] auto field_count() const -> std::size_t;
-        [[nodiscard]] auto field_at(std::size_t i) const -> std::shared_ptr<binary_template_field>;
-        [[nodiscard]] auto field_named(const std::string& name) const -> std::weak_ptr<binary_template_field>;
+         auto add_symbol(const std::shared_ptr<struct resource_field_symbol>& symbol) -> void;
+         [[nodiscard]] auto symbol_named(const std::string& name) const -> std::weak_ptr<struct resource_field_symbol>;
+
+        [[nodiscard]] auto expected_value_lexeme_type() const -> lexeme_type;
     };
-
 }
 
-#endif //KDL_SCHEMA_BINARY_TEMPLATE_BINARY_TEMPLATE_HPP
+#endif //KDL_SCHEMA_RESOURCE_TYPE_RESOURCE_FIELD_VALUE_HPP

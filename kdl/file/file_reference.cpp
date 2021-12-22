@@ -19,6 +19,8 @@
 // SOFTWARE.
 
 #include <utility>
+#include <string>
+#include <ctype.h>
 #include <kdl/file/file_reference.hpp>
 
 // MARK: - Constructor
@@ -65,4 +67,18 @@ auto kdl::lib::file_reference::describe() const -> std::string
     }
     return "[" + std::to_string(m_absolute_position) + ":" + std::to_string(m_size) + "] "
          + m_file->path() + ":L" + std::to_string(m_line) + ":" + std::to_string(m_line_offset);
+}
+
+// MARK: - Source Lines
+
+auto kdl::lib::file_reference::complete_source_line() const -> std::string
+{
+    auto start = m_absolute_position - m_line_offset;
+    auto end = start;
+
+    while (m_file->source().at(end) != '\n') {
+        end++;
+    }
+
+    return m_file->source().substr(start, end - start);
 }

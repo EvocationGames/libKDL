@@ -18,10 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdexcept>
 #include <string>
 #include <kdl/parser/sema/define/binary_type.hpp>
 #include <kdl/schema/binary_type/binary_type.hpp>
+#include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keyword
 {
@@ -52,15 +52,15 @@ auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const
             expect(lexeme_type::identifier).t()
         })) {
             consumer.advance(2);
-            auto isa_type = consumer.read().string_value();
-            if (isa_type == spec::keyword::integer) {
+            auto isa_type = consumer.read();
+            if (isa_type.string_value() == spec::keyword::integer) {
                 type->set_isa(binary_type_isa::integer);
             }
-            else if (isa_type == spec::keyword::string) {
+            else if (isa_type.string_value() == spec::keyword::string) {
                 type->set_isa(binary_type_isa::string);
             }
             else {
-                throw std::runtime_error("Unrecognised binary type isa '" + isa_type + "'");
+                report::error(isa_type, "Unrecognised binary type isa '" + isa_type.string_value() + "'");
             }
         }
         else if (consumer.expect_all({
@@ -95,18 +95,19 @@ auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const
             expect(lexeme_type::identifier).t()
         })) {
             consumer.advance(2);
-            auto enc_type = consumer.read().string_value();
-            if (enc_type == encoding::ascii) {
+            auto enc_type = consumer.read();
+            if (enc_type.string_value() == encoding::ascii) {
                 type->set_char_encoding(binary_type_char_encoding::ascii);
             }
-            else if (enc_type == encoding::macroman) {
+            else if (enc_type.string_value() == encoding::macroman) {
                 type->set_char_encoding(binary_type_char_encoding::macroman);
             }
-            else if (enc_type == encoding::utf8) {
+            else if (enc_type.string_value() == encoding::utf8) {
                 type->set_char_encoding(binary_type_char_encoding::utf8);
             }
             else {
-                throw std::runtime_error("Unrecognised binary type character encoding type '" + enc_type + "'");
+                report::warn(enc_type, "Unrecognised binary type character encoding type. Using macroman.");
+                type->set_char_encoding(binary_type_char_encoding::macroman);
             }
         }
         else if (consumer.expect( expect(lexeme_type::identifier, spec::keyword::is_signed).t() )) {

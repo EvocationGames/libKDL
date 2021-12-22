@@ -18,50 +18,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/binary_template/binary_template.hpp>
-#include <kdl/schema/binary_template/binary_template_field.hpp>
+#if !defined(KDL_SCHEMA_RESOURCE_TYPE_HPP)
+#define KDL_SCHEMA_RESOURCE_TYPE_HPP
 
-// MARK: - Construction
+#include <string>
+#include <memory>
+#include <vector>
 
-kdl::lib::binary_template::binary_template(const std::string& name)
-    : m_name(name)
+namespace kdl::lib
 {
+    struct binary_template;
+    struct resource_field;
 
+    struct resource_type
+    {
+    private:
+        std::string m_name;
+        std::string m_code;
+        std::weak_ptr<binary_template> m_template;
+        std::vector<std::shared_ptr<resource_field>> m_fields;
+
+    public:
+        resource_type(const std::string& name, const std::string& code);
+
+        [[nodiscard]] auto name() const -> std::string;
+        [[nodiscard]] auto code() const -> std::string;
+
+        auto set_binary_template(const std::weak_ptr<struct binary_template>& tmpl) -> void;
+        [[nodiscard]] auto binary_template() const -> std::weak_ptr<struct binary_template>;
+
+        auto add_field(const std::shared_ptr<struct resource_field>& field) -> void;
+    };
 }
 
-// MARK: - Accessors
-
-auto kdl::lib::binary_template::name() const -> std::string
-{
-    return m_name;
-}
-
-// MARK: - Field Management
-
-auto kdl::lib::binary_template::add_field(const std::shared_ptr<binary_type>& type, const std::string& name) -> void
-{
-    m_fields.emplace_back(std::make_shared<binary_template_field>(type, name));
-}
-
-// MARK: - Field Querying and Accessors
-
-auto kdl::lib::binary_template::field_count() const -> std::size_t
-{
-    return m_fields.size();
-}
-
-auto kdl::lib::binary_template::field_at(std::size_t i) const -> std::shared_ptr<binary_template_field>
-{
-    return m_fields.at(i);
-}
-
-auto kdl::lib::binary_template::field_named(const std::string& name) const -> std::weak_ptr<binary_template_field>
-{
-    for (auto& field : m_fields) {
-        if (field->name() == name) {
-            return field;
-        }
-    }
-    return {};
-}
-
+#endif

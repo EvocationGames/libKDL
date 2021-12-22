@@ -34,7 +34,8 @@ namespace kdl::lib
         lbrace, rbrace, lparen, rparen, langle, rangle, lbracket, rbracket,
         exclaim, dollar, carat, amp, star, plus, minus,
         equals, slash, bar, question, dot, comma, tilde,
-        colon, semicolon, hash, backslash, comment
+        colon, semicolon, hash, backslash, comment,
+        shift_left, shift_right, scope
     };
 
     static auto describe_lexeme_type(lexeme_type type) -> std::string
@@ -82,6 +83,9 @@ namespace kdl::lib
         case lexeme_type::hash: return "hash";
         case lexeme_type::backslash: return "backslash";
         case lexeme_type::comment: return "comment";
+        case lexeme_type::shift_left: return "shift_left";
+        case lexeme_type::shift_right: return "shift_right";
+        case lexeme_type::scope: return "scope";
         }
     };
 }

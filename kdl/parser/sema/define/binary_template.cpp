@@ -18,9 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <stdexcept>
 #include <kdl/schema/module.hpp>
 #include <kdl/parser/sema/define/binary_template.hpp>
+#include <kdl/report/reporting.hpp>
 
 auto kdl::lib::sema::define::binary_template::parse(lexeme_consumer& consumer,
                                                     const std::shared_ptr<struct binary_template>& tmpl,
@@ -31,25 +31,24 @@ auto kdl::lib::sema::define::binary_template::parse(lexeme_consumer& consumer,
 
         while (consumer.expect_all({
             expect(lexeme_type::identifier).t(),
-            expect(lexeme_type::colon).t(),
-            expect(lexeme_type::colon).t()
+            expect(lexeme_type::scope).t()
         })) {
             namespace_path.emplace_back(consumer.read().string_value());
-            consumer.advance(2);
+            consumer.advance(1);
         }
 
         if (!consumer.expect_all({
             expect(lexeme_type::identifier).t(),
             expect(lexeme_type::identifier).t()
         })) {
-            throw std::runtime_error("Expected identifier for binary field type, and identifier for field name.");
+            report::error(consumer.peek(), "Expected identifier for binary field type, and identifier for field name.");
         }
 
         auto binary_type_name = consumer.read();
         auto field_name = consumer.read();
         auto binary_type = module->binary_type_named(binary_type_name.string_value(), namespace_path);
         if (binary_type.expired()) {
-            throw std::runtime_error("Unknown binary type specified: '" + binary_type_name.string_value() + "'");
+            report::error(binary_type_name, "Unknown binary type specified: '" + binary_type_name.string_value() + "'");
         }
         tmpl->add_field(binary_type.lock(), field_name.string_value());
 

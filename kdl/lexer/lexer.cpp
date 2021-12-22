@@ -20,6 +20,7 @@
 
 #include <kdl/lexer/lexer.hpp>
 #include <kdl/lexer/lexical_rules.hpp>
+#include <kdl/report/reporting.hpp>
 
 // MARK: - Construction
 
@@ -158,6 +159,15 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
         }
 
         // Operators
+        else if (test(lexical_rule::sequence<':', ':'>::matches, 0, 2)) {
+            inject_lexeme(construct_lexeme(lexeme_type::scope, read(2)));
+        }
+        else if (test(lexical_rule::sequence<'<', '<'>::matches, 0, 2)) {
+            inject_lexeme(construct_lexeme(lexeme_type::shift_left, read(2)));
+        }
+        else if (test(lexical_rule::sequence<'>', '>'>::matches, 0, 2)) {
+            inject_lexeme(construct_lexeme(lexeme_type::shift_right, read(2)));
+        }
         else if (test(lexical_rule::match<';'>::yes)) {
             inject_lexeme(construct_lexeme(lexeme_type::semicolon, read()));
         }
@@ -238,7 +248,7 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
         }
 
         else {
-            throw std::logic_error("Unexpected character encountered: '" + peek() + "'");
+            report::error(m_lexemes.back(), "Unexpected character encountered: '" + peek() + "'");
         }
     }
 
@@ -281,7 +291,7 @@ auto kdl::lib::lexer::save_cursor() -> void
 auto kdl::lib::lexer::restore_cursor() -> void
 {
     if (m_cursor_stack.empty()) {
-        throw std::logic_error("Lexer attempted to restore to a position that did not exist.");
+        report::error("Lexer attempted to restore to a position that did not exist.");
     }
     m_cursor = m_cursor_stack.back();
     m_cursor_stack.pop_back();
@@ -309,7 +319,7 @@ auto kdl::lib::lexer::has_available(std::int32_t offset, std::size_t count) cons
 auto kdl::lib::lexer::peek(std::size_t count, std::int32_t offset) const -> std::string
 {
     if (!has_available(offset, count)) {
-        throw std::logic_error("Failed to read string from source.");
+        report::error(m_lexemes.back(), "Failed to read string from source.");
     }
     return m_source->source().substr(m_cursor + offset, count);
 }

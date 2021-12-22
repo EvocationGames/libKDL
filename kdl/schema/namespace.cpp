@@ -20,6 +20,9 @@
 
 #include <kdl/schema/namespace.hpp>
 #include <kdl/schema/binary_type/binary_type.hpp>
+#include <kdl/schema/binary_template/binary_template.hpp>
+#include <kdl/schema/resource_type/resource_type.hpp>
+#include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keywords
 {
@@ -104,7 +107,7 @@ auto kdl::lib::name_space::binary_type_named(const std::string& name, const std:
 {
     auto ns = resolve_path(path);
     if (ns == nullptr) {
-        throw std::runtime_error("Unable to find any namespace.");
+        report::error("Unable to find any namespace.");
     }
 
     if (ns.get() != this) {
@@ -112,6 +115,60 @@ auto kdl::lib::name_space::binary_type_named(const std::string& name, const std:
     }
     else {
         for (const auto& weak : m_binary_types) {
+            if (const auto& type = weak.lock(); type->name() == name) {
+                return weak;
+            }
+        }
+        return {};
+    }
+}
+
+// MARK: - Binary Template Management
+
+auto kdl::lib::name_space::register_binary_template(const std::weak_ptr<binary_template>& tmpl) -> void
+{
+    m_binary_templates.emplace_back(tmpl);
+}
+
+auto kdl::lib::name_space::binary_template_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<binary_template>
+{
+    auto ns = resolve_path(path);
+    if (ns == nullptr) {
+        report::error("Unable to find any namespace.");
+    }
+
+    if (ns.get() != this) {
+        return ns->binary_template_named(name, {});
+    }
+    else {
+        for (const auto& weak : m_binary_templates) {
+            if (const auto& tmpl = weak.lock(); tmpl->name() == name) {
+                return weak;
+            }
+        }
+        return {};
+    }
+}
+
+// MARK: - Resource Types
+
+auto kdl::lib::name_space::register_resource_type(const std::weak_ptr<resource_type>& type) -> void
+{
+    m_resource_types.emplace_back(type);
+}
+
+auto kdl::lib::name_space::resource_type_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<resource_type>
+{
+    auto ns = resolve_path(path);
+    if (ns == nullptr) {
+        report::error("Unable to find any namespace.");
+    }
+
+    if (ns.get() != this) {
+        return ns->resource_type_named(name, {});
+    }
+    else {
+        for (const auto& weak : m_resource_types) {
             if (const auto& type = weak.lock(); type->name() == name) {
                 return weak;
             }

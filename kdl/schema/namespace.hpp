@@ -29,6 +29,7 @@ namespace kdl::lib
 {
     struct binary_type;
     struct binary_template;
+    struct resource_type;
 
     class name_space: public std::enable_shared_from_this<name_space>
     {
@@ -39,6 +40,7 @@ namespace kdl::lib
         std::vector<std::shared_ptr<name_space>> m_children;
         std::vector<std::weak_ptr<binary_type>> m_binary_types;
         std::vector<std::weak_ptr<binary_template>> m_binary_templates;
+        std::vector<std::weak_ptr<resource_type>> m_resource_types;
 
     public:
         name_space() = default;
@@ -54,6 +56,12 @@ namespace kdl::lib
 
         auto register_binary_type(const std::weak_ptr<binary_type>& type) -> void;
         [[nodiscard]] auto binary_type_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<binary_type>;
+
+        auto register_binary_template(const std::weak_ptr<binary_template>& tmpl) -> void;
+        [[nodiscard]] auto binary_template_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<binary_template>;
+
+        auto register_resource_type(const std::weak_ptr<resource_type>& type) -> void;
+        [[nodiscard]] auto resource_type_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<resource_type>;
     };
 
 }

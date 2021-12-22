@@ -1,25 +1,44 @@
-@module "Modern" {
-    @namespace Modern;
+@module "Classic" {
+    @namespace Classic;
 
-    define(*type UInt16) {
+    define(*type HBYT) {
+        isa = integer;
+        size = 1;
+    };
+
+    define(*type HLNG) {
         isa = integer;
         size = 4;
-        is_signed;
     };
 
+    define(*type CSTR) {
+        isa = string;
+        size = null_terminated;
+        char = macroman;
+    };
+
+    define(*type Color) {
+        isa = integer;
+        size = 4;
+    };
+
+    `define(*function Color.rgb:3) {
+    `    return (255 << 14) | (Arg0 << 16) | (Arg1 << 8) | Arg2;
+    `};
 };
 
-@project "Test Project" {
-    ` No defined namespace, means it belongs to its parents namespace.
+@module "Tests" {
 
-    define(*type UInt16) {
-        isa = integer;
-        size = 2;
-    };
+    define(Fruit : "früt") {
+        template {
+            Classic::CSTR Name;
+            Classic::Color Color;
+        };
 
-    define(*template NumberPairTemplate) {
-        Modern::UInt16 First;
-        UInt16 Second;
+        field Name;
+        field Color {
+            Color = rgb(200, 0, 0);
+        };
     };
 
 };

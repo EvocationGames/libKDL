@@ -20,7 +20,6 @@
 
 #include <utility>
 #include <kdl/schema/module.hpp>
-#include <kdl/parser/parser.hpp>
 #include <kdl/schema/namespace.hpp>
 
 // MARK: - Constructor
@@ -156,4 +155,38 @@ auto kdl::lib::module::add_binary_template_definition(const std::shared_ptr<bina
 {
     // TODO: Check for existing binary template
     m_template_definitions.emplace_back(tmpl);
+
+    if (auto ns = get_namespace().lock()) {
+        ns->register_binary_template(tmpl);
+    }
+}
+
+auto kdl::lib::module::binary_template_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<binary_template>
+{
+    if (path.size() == 1 && path.at(0) == "this") {
+        for (const auto& tmpl : m_template_definitions) {
+            if (tmpl->name() == name) {
+                return tmpl;
+            }
+        }
+        return {};
+    }
+
+    if (auto ns = get_namespace().lock()) {
+        return ns->binary_template_named(name, path);
+    }
+    else {
+        return {};
+    }
+};
+
+// MARK: - Resource Type Definitions
+
+auto kdl::lib::module::add_resource_type_definition(const std::shared_ptr<resource_type>& type) -> void
+{
+    m_resource_type_definitions.emplace_back(type);
+
+    if (auto ns = get_namespace().lock()) {
+        ns->register_resource_type(type);
+    }
 }

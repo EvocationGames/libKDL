@@ -18,50 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/binary_template/binary_template.hpp>
-#include <kdl/schema/binary_template/binary_template_field.hpp>
+#if !defined(KDL_PARSER_SEMA_DEFINE_RESOURCE_FIELD_HPP)
+#define KDL_PARSER_SEMA_DEFINE_RESOURCE_FIELD_HPP
 
-// MARK: - Construction
+#include <memory>
+#include <kdl/parser/consumer/consumer.hpp>
 
-kdl::lib::binary_template::binary_template(const std::string& name)
-    : m_name(name)
+namespace kdl::lib
 {
-
+    class module;
+    struct resource_type;
+    struct resource_field;
 }
 
-// MARK: - Accessors
-
-auto kdl::lib::binary_template::name() const -> std::string
+namespace kdl::lib::sema::define::resource_field
 {
-    return m_name;
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<struct resource_type>& type, const std::shared_ptr<struct resource_field>& field) -> void;
 }
 
-// MARK: - Field Management
-
-auto kdl::lib::binary_template::add_field(const std::shared_ptr<binary_type>& type, const std::string& name) -> void
-{
-    m_fields.emplace_back(std::make_shared<binary_template_field>(type, name));
-}
-
-// MARK: - Field Querying and Accessors
-
-auto kdl::lib::binary_template::field_count() const -> std::size_t
-{
-    return m_fields.size();
-}
-
-auto kdl::lib::binary_template::field_at(std::size_t i) const -> std::shared_ptr<binary_template_field>
-{
-    return m_fields.at(i);
-}
-
-auto kdl::lib::binary_template::field_named(const std::string& name) const -> std::weak_ptr<binary_template_field>
-{
-    for (auto& field : m_fields) {
-        if (field->name() == name) {
-            return field;
-        }
-    }
-    return {};
-}
-
+#endif //KDL_PARSER_SEMA_DEFINE_RESOURCE_TYPE_FIELD_HPP

@@ -18,50 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/binary_template/binary_template.hpp>
-#include <kdl/schema/binary_template/binary_template_field.hpp>
+#if !defined(KDL_SCHEMA_RESOURCE_FIELD_SYMBOLS_HPP)
+#define KDL_SCHEMA_RESOURCE_FIELD_SYMBOLS_HPP
 
-// MARK: - Construction
+#include <string>
+#include <memory>
+#include <kdl/lexer/lexeme.hpp>
 
-kdl::lib::binary_template::binary_template(const std::string& name)
-    : m_name(name)
+namespace kdl::lib
 {
 
+    struct resource_field_symbol
+    {
+    private:
+        std::string m_name;
+        lexeme m_value;
+
+    public:
+        explicit resource_field_symbol(const std::string& name, const lexeme& lx);
+
+        [[nodiscard]] auto name() const -> std::string;
+        [[nodiscard]] auto type() const -> lexeme_type;
+        [[nodiscard]] auto value() const -> lexeme;
+    };
 }
 
-// MARK: - Accessors
-
-auto kdl::lib::binary_template::name() const -> std::string
-{
-    return m_name;
-}
-
-// MARK: - Field Management
-
-auto kdl::lib::binary_template::add_field(const std::shared_ptr<binary_type>& type, const std::string& name) -> void
-{
-    m_fields.emplace_back(std::make_shared<binary_template_field>(type, name));
-}
-
-// MARK: - Field Querying and Accessors
-
-auto kdl::lib::binary_template::field_count() const -> std::size_t
-{
-    return m_fields.size();
-}
-
-auto kdl::lib::binary_template::field_at(std::size_t i) const -> std::shared_ptr<binary_template_field>
-{
-    return m_fields.at(i);
-}
-
-auto kdl::lib::binary_template::field_named(const std::string& name) const -> std::weak_ptr<binary_template_field>
-{
-    for (auto& field : m_fields) {
-        if (field->name() == name) {
-            return field;
-        }
-    }
-    return {};
-}
-
+#endif //KDL_SCHEMA_RESOURCE_TYPE_RESOURCE_FIELD_SYMBOLS_HPP
