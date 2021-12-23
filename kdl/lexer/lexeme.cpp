@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <vector>
 #include <kdl/lexer/lexeme.hpp>
 
 // MARK: - Constructor
@@ -72,6 +73,13 @@ auto kdl::lib::lexeme::is(lexeme_type type) const -> bool
 auto kdl::lib::lexeme::is(lexeme_type type, const std::string& value) const -> bool
 {
     return is(type) && is(value);
+}
+
+auto kdl::lib::lexeme::is_one_of(const std::initializer_list<lexeme_type> &type) const -> bool
+{
+    return std::any_of(type.begin(), type.end(), [&] (const auto& it) {
+        return this->is(it);
+    });
 }
 
 // MARK: - Conversion Functions

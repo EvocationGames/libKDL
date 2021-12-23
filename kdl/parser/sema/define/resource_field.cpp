@@ -26,7 +26,10 @@
 #include <kdl/schema/resource_type/resource_field_symbol.hpp>
 #include <kdl/schema/binary_template/binary_template.hpp>
 #include <kdl/schema/binary_template/binary_template_field.hpp>
+#include <kdl/schema/function/function.hpp>
+#include <kdl/schema/function/function_argument.hpp>
 #include <kdl/report/reporting.hpp>
+#include <kdl/exe/function_execution.hpp>
 #include <optional>
 
 auto kdl::lib::sema::define::resource_field::parse(kdl::lib::lexeme_consumer &consumer,
@@ -68,6 +71,59 @@ auto kdl::lib::sema::define::resource_field::parse(kdl::lib::lexeme_consumer &co
             }
 
             default_value = consumer.read();
+
+            // Check the default value to see if it is a function.
+            if (default_value->is(lexeme_type::identifier) && consumer.expect( expect(lexeme_type::lparen).t() )) {
+                auto fn = bin_field->type()->function_named(default_value->string_value()).lock();
+                if (fn) {
+                    // We are looking at a function... we now need to parse it as such.
+                    consumer.advance();
+
+                    // Extract the arguments of the function.
+                    std::vector<lexeme> args;
+                    while (consumer.expect( expect(lexeme_type::rparen).f() )) {
+                        auto expected_arg = fn->argument_type_at(args.size()).lock();
+                        if (!expected_arg) {
+                            report::error(default_value.value(), "Argument count mismatch in function call.");
+                        }
+
+                        auto arg_value = consumer.read();
+                        args.emplace_back(arg_value);
+
+                        switch (arg_value.type()) {
+                            case lexeme_type::identifier:
+                                break;
+
+                            case lexeme_type::string:
+                                if (expected_arg->isa() == binary_type_isa::integer) {
+                                    report::warn(arg_value, "Argument should be an integer type.");
+                                }
+                                break;
+
+                            case lexeme_type::integer:
+                            case lexeme_type::percentage:
+                                if (expected_arg->isa() == binary_type_isa::string) {
+                                    report::warn(arg_value, "Argument should be a string type.");
+                                }
+                                break;
+
+                            default:
+                                report::error(arg_value, "Illegal argument value.");
+                        }
+
+                        if (consumer.expect( expect(lexeme_type::rparen).f() )) {
+                            consumer.assert_lexemes({ expect(lexeme_type::comma).t() });
+                        }
+                    }
+
+                    // Make sure that the function call is closed off correctly, and get ready to execute...
+                    consumer.assert_lexemes({ expect(lexeme_type::rparen).t() });
+
+                    // Pass the function and the arguments to be executed, and then replace default_value with the
+                    // result.
+                    default_value = exe::function_execution(fn, args, default_value.value()).execute();
+                }
+            }
         }
 
         // Check if the field value has any pre-defined constants/values/symbols.
@@ -88,7 +144,6 @@ auto kdl::lib::sema::define::resource_field::parse(kdl::lib::lexeme_consumer &co
                 else {
                     default_value = { value->value() };
                 }
-
             }
 
             // Now make sure the resolved value actually has the correct type.

@@ -22,6 +22,7 @@
 #include <kdl/schema/binary_type/binary_type.hpp>
 #include <kdl/schema/binary_template/binary_template.hpp>
 #include <kdl/schema/resource_type/resource_type.hpp>
+#include <kdl/schema/function/function.hpp>
 #include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keywords
@@ -170,6 +171,33 @@ auto kdl::lib::name_space::resource_type_named(const std::string& name, const st
     else {
         for (const auto& weak : m_resource_types) {
             if (const auto& type = weak.lock(); type->name() == name) {
+                return weak;
+            }
+        }
+        return {};
+    }
+}
+
+// MARK: - Functions
+
+auto kdl::lib::name_space::register_function(const std::weak_ptr<function>& fn) -> void
+{
+    m_functions.emplace_back(fn);
+}
+
+auto kdl::lib::name_space::function_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<function>
+{
+    auto ns = resolve_path(path);
+    if (ns == nullptr) {
+        report::error("Unable to find any namespace.");
+    }
+
+    if (ns.get() != this) {
+        return ns->function_named(name, {});
+    }
+    else {
+        for (const auto& weak : m_functions) {
+            if (const auto& fn = weak.lock(); fn->name() == name) {
                 return weak;
             }
         }

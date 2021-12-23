@@ -23,10 +23,12 @@
 #include <kdl/parser/sema/define/binary_type.hpp>
 #include <kdl/parser/sema/define/binary_template.hpp>
 #include <kdl/parser/sema/define/resource_type.hpp>
+#include <kdl/parser/sema/define/function.hpp>
 #include <kdl/schema/module.hpp>
 #include <kdl/schema/binary_type/binary_type.hpp>
 #include <kdl/schema/binary_template/binary_template.hpp>
 #include <kdl/schema/resource_type/resource_type.hpp>
+#include <kdl/schema/function/function.hpp>
 #include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keywords
@@ -34,6 +36,7 @@ namespace kdl::lib::spec::keywords
     constexpr const char *define { "define" };
     constexpr const char *type { "type" };
     constexpr const char *tmpl { "template" };
+    constexpr const char *function { "function" };
 }
 
 auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_ptr<module> &module) -> void
@@ -72,6 +75,29 @@ auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_
                 auto tmpl = std::make_shared<struct binary_template>(name.string_value());
                 sema::define::binary_template::parse(consumer, tmpl, module);
                 module->add_binary_template_definition(tmpl);
+            };
+        }
+        else if (consumer.expect_all({
+            expect(lexeme_type::identifier, spec::keywords::function).t(),
+            expect(lexeme_type::colon).t(),
+        })) {
+            consumer.advance(2);
+            auto function = sema::define::function::parse(consumer, module);
+            module->add_function(function);
+
+            continuation = [&consumer, function, module] {
+                auto brace_balancer = 0;
+                std::vector<lexeme> fn_body;
+                while (consumer.expect( expect(lexeme_type::rbrace).f()) || brace_balancer > 0) {
+                    if (consumer.expect( expect(lexeme_type::lbrace).t() )) {
+                        brace_balancer++;
+                    }
+                    else if (consumer.expect( expect(lexeme_type::rbrace).t() )) {
+                        brace_balancer--;
+                    }
+                    fn_body.emplace_back(consumer.read());
+                }
+                function->set_body(fn_body);
             };
         }
         else {

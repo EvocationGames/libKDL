@@ -20,6 +20,7 @@
 
 #include <kdl/schema/module.hpp>
 #include <kdl/parser/sema/define/binary_template.hpp>
+#include <kdl/schema/binary_template/binary_template.hpp>
 #include <kdl/report/reporting.hpp>
 
 auto kdl::lib::sema::define::binary_template::parse(lexeme_consumer& consumer,

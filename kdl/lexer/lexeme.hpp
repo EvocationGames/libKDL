@@ -23,6 +23,7 @@
 
 #include <string>
 #include <memory>
+#include <initializer_list>
 #include <kdl/file/file_reference.hpp>
 #include <kdl/lexer/lexeme_type.hpp>
 
@@ -52,6 +53,7 @@ namespace kdl::lib
         [[nodiscard]] auto is(const std::string& value) const -> bool;
         [[nodiscard]] auto is(lexeme_type type) const -> bool;
         [[nodiscard]] auto is(lexeme_type type, const std::string& value) const -> bool;
+        [[nodiscard]] auto is_one_of(const std::initializer_list<lexeme_type>& type) const -> bool;
 
         [[nodiscard]] auto int8_value() const -> int8_t;
         [[nodiscard]] auto uint8_value() const -> uint8_t;
@@ -65,6 +67,48 @@ namespace kdl::lib
         [[nodiscard]] auto long_double_value() const -> long double;
 
         [[nodiscard]] auto describe() const -> std::string;
+
+        template<typename T, typename std::enable_if<std::is_arithmetic<T>::value>::type* = nullptr>
+        [[nodiscard]] auto value() const -> T
+        {
+            if (is_one_of({ lexeme_type::star, lexeme_type::slash })) {
+                return 2;
+            }
+            else if (is_one_of({ lexeme_type::plus, lexeme_type::minus })) {
+                return 3;
+            }
+            else if (is_one_of({ lexeme_type::shift_left, lexeme_type::shift_right })) {
+                return 4;
+            }
+            else if (is_one_of({ lexeme_type::amp })) {
+                return 5;
+            }
+            else if (is_one_of({ lexeme_type::carat })) {
+                return 6;
+            }
+            else if (is_one_of({ lexeme_type::bar })) {
+                return 7;
+            }
+            else if (m_value.size() >= 2 && m_value.at(0) == '-' && m_type != lexeme_type::hex) {
+                return static_cast<T>(std::stoll(m_value, nullptr, 10));
+            }
+            else if (m_value.size() >= 2 && m_value.at(0) == '-' && m_type == lexeme_type::hex) {
+                return static_cast<T>(std::stoll(m_value, nullptr, 16));
+            }
+            else if (m_type == lexeme_type::hex) {
+                return static_cast<T>(std::stoull(m_value, nullptr, 16));
+            }
+            else {
+                return static_cast<T>(std::stoull(m_value, nullptr, 10));
+            }
+        }
+
+        [[nodiscard]] auto left_associative() const -> bool
+        {
+            return is_one_of({
+                lexeme_type::carat
+            });
+        }
     };
 }
 

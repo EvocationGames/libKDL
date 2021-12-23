@@ -22,9 +22,9 @@
         size = 4;
     };
 
-    `define(*function Color.rgb:3) {
-    `    return (255 << 14) | (Arg0 << 16) | (Arg1 << 8) | Arg2;
-    `};
+    define(*function : Classic::Color.rgb : Classic::HBYT Red, HBYT Green, HBYT Blue) {
+        (255 << 24) | (Red << 16) | (Green << 8) | Blue
+    };
 };
 
 @module "Tests" {

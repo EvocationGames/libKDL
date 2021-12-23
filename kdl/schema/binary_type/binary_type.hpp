@@ -23,11 +23,14 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 #include <kdl/schema/binary_type/isa.hpp>
 #include <kdl/schema/binary_type/char_encoding.hpp>
 
 namespace kdl::lib
 {
+    struct function;
+
     struct binary_type
     {
     private:
@@ -38,6 +41,7 @@ namespace kdl::lib
         std::size_t m_size { 1 };
         std::size_t m_count_width { 0 };
         binary_type_char_encoding m_encoding { binary_type_char_encoding::macroman };
+        std::vector<std::weak_ptr<struct function>> m_functions;
 
     public:
         explicit binary_type(const std::string& name);
@@ -48,6 +52,7 @@ namespace kdl::lib
         auto set_size(std::size_t size) -> void;
         auto set_count_width(std::size_t count) -> void;
         auto set_char_encoding(binary_type_char_encoding enc) -> void;
+        auto add_function(const std::shared_ptr<struct function>& fn) -> void;
 
         [[nodiscard]] auto name() const -> std::string;
         [[nodiscard]] auto isa() const -> binary_type_isa;
@@ -56,6 +61,7 @@ namespace kdl::lib
         [[nodiscard]] auto size() const -> std::size_t;
         [[nodiscard]] auto count_width() const -> std::size_t;
         [[nodiscard]] auto char_encoding() const -> binary_type_char_encoding;
+        [[nodiscard]] auto function_named(const std::string& name) const -> std::weak_ptr<struct function>;
 
     };
 }

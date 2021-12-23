@@ -21,6 +21,10 @@
 #include <utility>
 #include <kdl/schema/module.hpp>
 #include <kdl/schema/namespace.hpp>
+#include <kdl/schema/binary_type/binary_type.hpp>
+#include <kdl/schema/binary_template/binary_template.hpp>
+#include <kdl/schema/resource_type/resource_type.hpp>
+#include <kdl/schema/function/function.hpp>
 
 // MARK: - Constructor
 
@@ -188,5 +192,55 @@ auto kdl::lib::module::add_resource_type_definition(const std::shared_ptr<resour
 
     if (auto ns = get_namespace().lock()) {
         ns->register_resource_type(type);
+    }
+}
+
+auto kdl::lib::module::resource_type_named(const std::string& name, const std::vector<std::string>& path) -> std::weak_ptr<resource_type>
+{
+    if (path.size() == 1 && path.at(0) == "this") {
+        for (const auto& type : m_resource_type_definitions) {
+            if (type->name() == name) {
+                return type;
+            }
+        }
+        return {};
+    }
+
+    if (auto ns = get_namespace().lock()) {
+        return ns->resource_type_named(name, path);
+    }
+    else {
+        return {};
+    }
+};
+
+// MARK: - Functions
+
+auto kdl::lib::module::add_function(const std::shared_ptr<function>& fn) -> void
+{
+    m_functions.emplace_back(fn);
+
+    if (auto ns = get_namespace().lock()) {
+        ns->register_function(fn);
+    }
+}
+
+auto kdl::lib::module::function_named(const std::string& name, const std::string& type, const std::vector<std::string>& path) -> std::weak_ptr<function>
+{
+    if (path.size() == 1 && path.at(0) == "this") {
+        for (const auto& fn : m_functions) {
+            auto construction_type = fn->construction_type().lock();
+            if (construction_type && fn->name() == name && construction_type->name() == name) {
+                return fn;
+            }
+        }
+        return {};
+    }
+
+    if (auto ns = get_namespace().lock()) {
+        return ns->function_named(name, path);
+    }
+    else {
+        return {};
     }
 }

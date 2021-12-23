@@ -26,13 +26,14 @@
 #include <memory>
 #include <optional>
 #include <kdl/schema/module_type.hpp>
-#include <kdl/schema/binary_type/binary_type.hpp>
-#include <kdl/schema/binary_template/binary_template.hpp>
-#include <kdl/schema/resource_type/resource_type.hpp>
 
 namespace kdl::lib
 {
     class name_space;
+    struct function;
+    struct binary_type;
+    struct binary_template;
+    struct resource_type;
 
     class module: public std::enable_shared_from_this<module>
     {
@@ -47,6 +48,7 @@ namespace kdl::lib
         std::vector<std::string> m_copyright;
         std::vector<std::shared_ptr<binary_type>> m_binary_type_definitions;
         std::vector<std::shared_ptr<binary_template>> m_template_definitions;
+        std::vector<std::shared_ptr<function>> m_functions;
         std::vector<std::shared_ptr<resource_type>> m_resource_type_definitions;
         std::vector<int> m_resource_declarations;
 
@@ -73,6 +75,10 @@ namespace kdl::lib
         [[nodiscard]] auto binary_template_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<binary_template>;
 
         auto add_resource_type_definition(const std::shared_ptr<resource_type>& type) -> void;
+        [[nodiscard]] auto resource_type_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<resource_type>;
+
+        auto add_function(const std::shared_ptr<function>& fn) -> void;
+        [[nodiscard]] auto function_named(const std::string& name, const std::string& type, const std::vector<std::string>& path = {}) -> std::weak_ptr<function>;
     };
 
 }

@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #include <kdl/schema/binary_type/binary_type.hpp>
+#include <kdl/schema/function/function.hpp>
 
 // MARK: - Construction
 
@@ -60,6 +61,12 @@ auto kdl::lib::binary_type::set_char_encoding(binary_type_char_encoding enc) -> 
     m_encoding = enc;
 }
 
+auto kdl::lib::binary_type::add_function(const std::shared_ptr<struct function>& fn) -> void
+{
+    m_functions.emplace_back(fn);
+}
+
+
 // MARK: - Accessors
 
 auto kdl::lib::binary_type::name() const -> std::string
@@ -95,4 +102,15 @@ auto kdl::lib::binary_type::count_width() const -> std::size_t
 auto kdl::lib::binary_type::char_encoding() const -> binary_type_char_encoding
 {
     return m_encoding;
+}
+
+auto kdl::lib::binary_type::function_named(const std::string& name) const -> std::weak_ptr<struct function>
+{
+    for (auto& weak : m_functions) {
+        auto fn = weak.lock();
+        if (fn && fn->name() == name) {
+            return fn;
+        }
+    }
+    return {};
 }
