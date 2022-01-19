@@ -25,6 +25,7 @@
 #include <kdl/parser/sema/directive/copyright.hpp>
 #include <kdl/parser/sema/directive/out.hpp>
 #include <kdl/parser/sema/define/define.hpp>
+#include <kdl/parser/sema/project/scene.hpp>
 #include <kdl/schema/namespace.hpp>
 #include <kdl/report/reporting.hpp>
 
@@ -40,6 +41,7 @@ namespace kdl::lib::spec::keywords
     constexpr const char *declare { "declare" };
     constexpr const char *component { "component" };
     constexpr const char *name_space { "namespace" };
+    constexpr const char *scene { "scene" };
 }
 
 auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_ptr<name_space>& ns) -> std::shared_ptr<class module>
@@ -103,6 +105,9 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
         }
         else if (consumer.expect({ expect(lexeme_type::identifier, spec::keywords::component).t() })) {
 
+        }
+        else if (consumer.expect({ expect(lexeme_type::identifier, spec::keywords::scene).t() })) {
+            sema::project::scene::parse(consumer, module);
         }
 
         else {

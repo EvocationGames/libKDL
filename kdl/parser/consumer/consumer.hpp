@@ -32,6 +32,7 @@ namespace kdl::lib
     class lexeme_consumer
     {
     private:
+        std::vector<std::size_t> m_position_stack;
         std::vector<lexeme> m_lexemes;
         std::vector<lexeme> m_pushed_lexemes;
         std::size_t m_cursor { 0 };
@@ -43,6 +44,9 @@ namespace kdl::lib
         [[nodiscard]] auto finished(std::size_t count = 1, std::int32_t offset = 0) const -> bool;
         [[nodiscard]] auto has_available(std::size_t count = 1, std::int32_t offset = 0) const -> bool;
         [[nodiscard]] auto at(std::size_t i) const -> lexeme;
+
+        auto save_position() -> void;
+        auto restore_position() -> void;
 
         auto advance(std::int32_t offset = 1) -> void;
 

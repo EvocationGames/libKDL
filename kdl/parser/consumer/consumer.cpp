@@ -49,6 +49,20 @@ auto kdl::lib::lexeme_consumer::at(std::size_t i) const -> lexeme
     return m_lexemes.at(i);
 }
 
+auto kdl::lib::lexeme_consumer::save_position() -> void
+{
+    m_position_stack.emplace_back(m_cursor);
+}
+
+auto kdl::lib::lexeme_consumer::restore_position() -> void
+{
+    if (m_position_stack.empty()) {
+        throw std::runtime_error("Attempted to restore to an invalid position whilst parsing.");
+    }
+    m_cursor = m_position_stack.back();
+    m_position_stack.pop_back();
+}
+
 auto kdl::lib::lexeme_consumer::advance(std::int32_t offset) -> void
 {
     for (auto n = 0; !m_pushed_lexemes.empty() && n < offset; ++n) {

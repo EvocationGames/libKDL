@@ -230,7 +230,7 @@ auto kdl::lib::module::function_named(const std::string& name, const std::string
     if (path.size() == 1 && path.at(0) == "this") {
         for (const auto& fn : m_functions) {
             auto construction_type = fn->construction_type().lock();
-            if (construction_type && fn->name() == name && construction_type->name() == name) {
+            if (construction_type && fn->name() == name && construction_type->name() == type) {
                 return fn;
             }
         }
