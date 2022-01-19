@@ -22,6 +22,20 @@
         size = 4;
     };
 
+    @ifdef extended
+        define(*type ResourceReference) {
+            isa = integer;
+            is_signed;
+            size = 8;
+        };
+    @else
+        define(*type ResourceReference) {
+            isa = integer;
+            is_signed;
+            size = 2;
+        };
+    @end
+
     define(*function : Classic::Color.rgb : Classic::HBYT Red, HBYT Green, HBYT Blue) {
         (255 << 24) | (Red << 16) | (Green << 8) | Blue
     };
@@ -41,4 +55,35 @@
         };
     };
 
+`    declare Fruit {
+`
+`        new(#128, "Green Apple") {
+`            Name = "Apple";
+`            Color = rgb(0, 200, 0);
+`        };
+`
+`        new(#auto, "Red Apple") {
+`            Name = "Apple";
+`        };
+`
+`    };
+
+    scene TestScene {
+        background = rgb(0, 0, 0);
+        layer TestLayer {
+
+            entity RedSquare {
+                position = 50 50;
+                size = 100 100;
+                color = rgb(240, 60, 20);
+            };
+
+            entity GreenSquare {
+                position = 200 50;
+                size = 100 100;
+                color = rgb(20, 250, 30);
+            };
+
+        };
+    };
 };

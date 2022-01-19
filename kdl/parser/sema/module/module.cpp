@@ -37,6 +37,8 @@ namespace kdl::lib::spec::keywords
     constexpr const char *copyright { "copyright" };
     constexpr const char *out { "out" };
     constexpr const char *define { "define" };
+    constexpr const char *declare { "declare" };
+    constexpr const char *component { "component" };
     constexpr const char *name_space { "namespace" };
 }
 
@@ -95,6 +97,12 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
         // FUNCTIONS
         else if (consumer.expect({ expect(lexeme_type::identifier, spec::keywords::define).t() })) {
             sema::define::parse(consumer, module);
+        }
+        else if (consumer.expect({ expect(lexeme_type::identifier, spec::keywords::declare).t() })) {
+
+        }
+        else if (consumer.expect({ expect(lexeme_type::identifier, spec::keywords::component).t() })) {
+
         }
 
         else {

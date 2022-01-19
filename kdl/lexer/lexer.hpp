@@ -35,6 +35,7 @@ namespace kdl::lib
     class lexer
     {
     private:
+        std::vector<std::string> m_flags {{ "extended" }};
         std::vector<lexeme> m_lexemes;
         std::vector<std::size_t> m_cursor_stack;
         std::shared_ptr<source_file> m_source;
@@ -45,9 +46,14 @@ namespace kdl::lib
         std::size_t m_marker { 0 };
         std::size_t m_expr_paren_balance { 0 };
         bool m_in_expr { false };
+        bool m_ignore_lexemes { false };
 
     public:
         explicit lexer(const std::shared_ptr<source_file>& source);
+
+        auto set_flags(const std::vector<std::string>& flags) -> void;
+        auto add_flag(const std::string& flag) -> void;
+        [[nodiscard]] auto has_flag(const std::string& flag) const -> bool;
 
         auto reset() -> void;
         auto scan(bool omit_comments = true) -> std::vector<lexeme>;

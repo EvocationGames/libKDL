@@ -27,10 +27,10 @@ namespace kdl::lib
      */
     enum class lexeme_type : int
     {
-        unknown = 0,
-        integer, percentage, resource_ref, namespace_ref, decimal, hex, lexpr, rexpr, var,
-        string, character,
-        keyword, identifier, directive,
+        any_integer = -2, any_string = -3,
+        any = -1, unknown = 0,
+        integer, percentage, resource_ref, decimal, hex, lexpr, rexpr, var,
+        string, character, identifier, directive,
         lbrace, rbrace, lparen, rparen, langle, rangle, lbracket, rbracket,
         exclaim, dollar, carat, amp, star, plus, minus,
         equals, slash, bar, question, dot, comma, tilde,
@@ -45,7 +45,6 @@ namespace kdl::lib
         case lexeme_type::integer: return "integer";
         case lexeme_type::percentage: return "percentage";
         case lexeme_type::resource_ref: return "resource-reference";
-        case lexeme_type::namespace_ref: return "namespace-reference";
         case lexeme_type::decimal: return "decimal";
         case lexeme_type::hex: return "hex";
         case lexeme_type::lexpr: return "start-expression";
@@ -53,7 +52,6 @@ namespace kdl::lib
         case lexeme_type::var: return "variable";
         case lexeme_type::string: return "string";
         case lexeme_type::character: return "character";
-        case lexeme_type::keyword: return "keyword";
         case lexeme_type::identifier: return "identifier";
         case lexeme_type::directive: return "directive";
         case lexeme_type::lbrace: return "lbrace";
@@ -86,6 +84,9 @@ namespace kdl::lib
         case lexeme_type::shift_left: return "shift_left";
         case lexeme_type::shift_right: return "shift_right";
         case lexeme_type::scope: return "scope";
+        case lexeme_type::any: return "any";
+        case lexeme_type::any_integer: return "any_integer";
+        case lexeme_type::any_string: return "any_string";
         }
     };
 }

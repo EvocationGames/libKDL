@@ -73,6 +73,29 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
         }
 
         // Directives
+        else if (test(lexical_rule::sequence<'@', 'i', 'f', 'd', 'e', 'f'>::matches, 0, 6)) {
+            advance(6);
+            consume(lexical_rule::whitespace::contains);
+            mark_lexeme_start();
+            consume(lexical_rule::identifier::matches);
+            m_ignore_lexemes = !has_flag(m_consume_slice);
+        }
+        else if (test(lexical_rule::sequence<'@', 'i', 'f', 'n', 'd', 'e', 'f'>::matches, 0, 7)) {
+            advance(7);
+            consume(lexical_rule::whitespace::contains);
+            mark_lexeme_start();
+            consume(lexical_rule::identifier::matches);
+            m_ignore_lexemes = has_flag(m_consume_slice);
+        }
+        else if (test(lexical_rule::sequence<'@', 'e', 'l', 's', 'e'>::matches, 0, 5)) {
+            advance(5);
+            m_ignore_lexemes = !m_ignore_lexemes;
+        }
+        else if (test(lexical_rule::sequence<'@', 'e', 'n', 'd'>::matches, 0, 4)) {
+            advance(4);
+            m_ignore_lexemes = false;
+        }
+
         else if (test(lexical_rule::match<'@'>::yes)) {
             advance();
             consume(lexical_rule::identifier::matches);
@@ -103,17 +126,6 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
         }
         else if (test(lexical_rule::match<'#'>::yes)) {
             advance();
-
-            // Types of Resource Reference:
-            //  #128
-            //  #'namespace'128
-            if (test(lexical_rule::match<'\''>::yes)) {
-                advance();
-                consume(lexical_rule::match<'\''>::no);
-                inject_lexeme(construct_lexeme(lexeme_type::namespace_ref));
-                advance();
-                mark_lexeme_start();
-            }
 
             auto negative = test(lexical_rule::match<'-'>::yes);
             if (negative) {
@@ -255,7 +267,25 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
     return m_lexemes;
 }
 
+// MARK: - Flags
+
+auto kdl::lib::lexer::set_flags(const std::vector<std::string>& flags) -> void
+{
+    m_flags = flags;
+}
+
+auto kdl::lib::lexer::add_flag(const std::string& flag) -> void
+{
+    m_flags.emplace_back(flag);
+}
+
+auto kdl::lib::lexer::has_flag(const std::string& flag) const -> bool
+{
+    return (std::find(m_flags.begin(), m_flags.end(), flag) != m_flags.end());
+}
+
 // MARK: - Basic Accessors
+
 auto kdl::lib::lexer::eof() const -> bool
 {
     return !has_available();
@@ -335,11 +365,17 @@ auto kdl::lib::lexer::read(std::size_t count, std::int32_t offset) -> std::strin
 
 auto kdl::lib::lexer::test(const std::function<auto(const std::string&)->bool>& fn, std::int32_t offset, std::size_t count) const -> bool
 {
+    if (!has_available(offset, count)) {
+        return false;
+    }
     return fn(peek(count, offset));
 }
 
 auto kdl::lib::lexer::test(const std::function<auto(std::size_t, const std::string&)->bool>& fn, std::int32_t offset, std::size_t count) const -> bool
 {
+    if (!has_available(offset, count)) {
+        return false;
+    }
     return fn(0, peek(count, offset));
 }
 
@@ -389,5 +425,8 @@ auto kdl::lib::lexer::construct_lexeme(kdl::lib::lexeme_type type, const std::st
 
 auto kdl::lib::lexer::inject_lexeme(lexeme lx) -> void
 {
+    if (m_ignore_lexemes) {
+        return;
+    }
     m_lexemes.emplace_back(std::move(lx));
 }

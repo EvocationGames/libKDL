@@ -67,7 +67,22 @@ auto kdl::lib::lexeme::is(const std::string& value) const -> bool
 
 auto kdl::lib::lexeme::is(lexeme_type type) const -> bool
 {
-    return m_type == type;
+    if (type == lexeme_type::any_integer) {
+        return (
+            m_type == lexeme_type::integer ||
+            m_type == lexeme_type::percentage ||
+            m_type == lexeme_type::hex ||
+            m_type == lexeme_type::resource_ref
+        );
+    }
+    else if (type == lexeme_type::any_string) {
+        return (
+            m_type == lexeme_type::string
+        );
+    }
+    else {
+        return (m_type == type);
+    }
 }
 
 auto kdl::lib::lexeme::is(lexeme_type type, const std::string& value) const -> bool
