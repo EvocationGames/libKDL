@@ -26,6 +26,7 @@
 #include <kdl/file/source_file.hpp>
 #include <kdl/lexer/lexeme.hpp>
 #include <kdl/parser/consumer/consumer.hpp>
+#include <kdl/parser/result.hpp>
 
 namespace kdl::lib
 {
@@ -44,6 +45,8 @@ namespace kdl::lib
 
         auto parse(const std::shared_ptr<source_file>& source) -> void;
         auto parse(std::vector<lexeme> lexemes) -> void;
+
+        [[nodiscard]] auto result() const -> parse_result;
     };
 
 }

@@ -65,4 +65,11 @@ auto kdl::lib::parser::parse(std::vector<lexeme> lexemes) -> void
     }
 }
 
+// MARK: - Accessor
+
+auto kdl::lib::parser::result() const -> parse_result
+{
+    return parse_result(m_modules, m_global_namespace);
+}
+
 
