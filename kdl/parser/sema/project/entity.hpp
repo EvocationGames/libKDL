@@ -18,46 +18,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/project/scene.hpp>
-#include <kdl/schema/project/layer.hpp>
+#pragma once
 
-// MARK: - Construction
+#include <memory>
+#include <kdl/parser/consumer/consumer.hpp>
 
-kdl::lib::scene::scene(const std::string &name)
-    : m_name(name)
+namespace kdl::lib
 {
+    class module;
+    class layer;
 }
 
-// MARK: - Attribute Management
-
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const lexeme &value) -> void
+namespace kdl::lib::sema::project::scene::layer::entity
 {
-    set_attribute(attribute, std::vector<lexeme>({value}));
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::layer>& layer, const std::shared_ptr<kdl::lib::module>& module) -> void;
 }
 
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const std::vector<lexeme> &value) -> void
-{
-    m_attributes.insert(std::pair(attribute, value));
-}
 
-auto kdl::lib::scene::get_attribute(const std::string &attribute) -> std::vector<lexeme> &
-{
-    return m_attributes.at(attribute);
-}
-
-auto kdl::lib::scene::has_attribute(const std::string &attribute) -> bool
-{
-    return (m_attributes.find(attribute) != m_attributes.end());
-}
-
-// MARK: - Layer Management
-
-auto kdl::lib::scene::add_layer(const std::shared_ptr<layer>& layer) -> void
-{
-    m_layers.emplace_back(layer);
-}
-
-auto kdl::lib::scene::layers() const -> std::vector<std::shared_ptr<layer>>
-{
-    return m_layers;
-}

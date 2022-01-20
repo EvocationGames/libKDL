@@ -18,38 +18,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/parser/sema/project/scene.hpp>
+#include <kdl/parser/sema/project/entity.hpp>
 #include <kdl/parser/sema/project/layer.hpp>
 #include <kdl/parser/sema/function/function_call.hpp>
-#include <kdl/schema/project/scene.hpp>
-#include <kdl/schema/module.hpp>
+#include <kdl/schema/project/entity.hpp>
+#include <kdl/schema/project/layer.hpp>
 #include <kdl/report/reporting.hpp>
 
 namespace kdl::lib::spec::keywords
 {
-    constexpr const char *scene { "scene" };
-    constexpr const char *layer { "layer" };
+    constexpr const char *entity { "entity" };
 }
 
-auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std::shared_ptr<kdl::lib::module> &module) -> void
+auto kdl::lib::sema::project::scene::layer::entity::parse(lexeme_consumer& consumer,
+                                                    const std::shared_ptr<kdl::lib::layer>& layer,
+                                                    const std::shared_ptr<kdl::lib::module>& module) -> void
 {
     if (!consumer.expect_all({
-        expect(lexeme_type::identifier, spec::keywords::scene).t(),
+        expect(lexeme_type::identifier, spec::keywords::entity).t(),
         expect(lexeme_type::identifier).t(),
         expect(lexeme_type::lbrace).t()
     })) {
-        report::error(consumer.peek(), "Expected scene structure");
+        report::error(consumer.peek(), "Expected entity structure");
     }
 
     consumer.advance();
-    auto scene_name = consumer.read();
+    auto entity_name = consumer.read();
     consumer.advance();
 
-    auto scene = std::make_shared<class kdl::lib::scene>(scene_name.string_value());
+    auto entity = std::make_shared<class kdl::lib::entity>(entity_name.string_value());
 
     while (consumer.expect( expect(lexeme_type::rbrace).f() )) {
-        if (consumer.expect( expect(lexeme_type::identifier, spec::keywords::layer).t() )) {
-            layer::parse(consumer, scene, module);
+        if (consumer.expect( expect(lexeme_type::identifier, spec::keywords::entity).t() )) {
+//            entity::parse(consumer, layer, module);
         }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier).t(), expect(lexeme_type::equals).t(),
@@ -64,11 +65,11 @@ auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std:
                 expect(lexeme_type::any_integer).t(), expect(lexeme_type::any_string).t(),
                 expect(lexeme_type::resource_ref).t(), expect(lexeme_type::percentage).t(),
                 expect(lexeme_type::hex).t(), expect(lexeme_type::character).t(),
-            })) {
+                })) {
                 v.emplace_back(consumer.read());
             }
 
-            scene->set_attribute(attribute.string_value(), v);
+            entity->set_attribute(attribute.string_value(), v);
         }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier).t(), expect(lexeme_type::equals).t(),
@@ -86,15 +87,15 @@ auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std:
                 consumer.advance();
             }
 
-            scene->set_attribute(attribute.string_value(), result);
+            entity->set_attribute(attribute.string_value(), result);
         }
         else {
-            report::error(consumer.peek(), "Unexpected token in scene.");
+            report::error(consumer.peek(), "Unexpected token in layer.");
         }
 
         consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });
     }
 
     consumer.assert_lexemes({ expect(lexeme_type::rbrace).t() });
-    module->add_scene(scene);
+    layer->add_entity(entity);
 }

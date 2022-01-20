@@ -55,6 +55,8 @@ namespace kdl::lib
         [[nodiscard]] auto is(lexeme_type type, const std::string& value) const -> bool;
         [[nodiscard]] auto is_one_of(const std::initializer_list<lexeme_type>& type) const -> bool;
 
+        [[nodiscard]] auto base() const -> uint8_t;
+
         [[nodiscard]] auto int8_value() const -> int8_t;
         [[nodiscard]] auto uint8_value() const -> uint8_t;
         [[nodiscard]] auto int16_value() const -> int16_t;

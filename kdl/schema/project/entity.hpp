@@ -18,46 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/project/scene.hpp>
-#include <kdl/schema/project/layer.hpp>
+#pragma once
 
-// MARK: - Construction
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <kdl/lexer/lexeme.hpp>
 
-kdl::lib::scene::scene(const std::string &name)
-    : m_name(name)
+namespace kdl::lib
 {
-}
+    struct entity
+    {
+    public:
+        explicit entity(const std::string& name);
 
-// MARK: - Attribute Management
+        [[nodiscard]] inline auto name() const -> std::string { return m_name; }
 
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const lexeme &value) -> void
-{
-    set_attribute(attribute, std::vector<lexeme>({value}));
-}
+        auto set_attribute(const std::string& attribute, const lexeme& value) -> void;
+        auto set_attribute(const std::string& attribute, const std::vector<lexeme>& value) -> void;
 
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const std::vector<lexeme> &value) -> void
-{
-    m_attributes.insert(std::pair(attribute, value));
-}
+        auto has_attribute(const std::string& attribute) -> bool;
+        auto get_attribute(const std::string& attribute) -> std::vector<lexeme>&;
 
-auto kdl::lib::scene::get_attribute(const std::string &attribute) -> std::vector<lexeme> &
-{
-    return m_attributes.at(attribute);
-}
-
-auto kdl::lib::scene::has_attribute(const std::string &attribute) -> bool
-{
-    return (m_attributes.find(attribute) != m_attributes.end());
-}
-
-// MARK: - Layer Management
-
-auto kdl::lib::scene::add_layer(const std::shared_ptr<layer>& layer) -> void
-{
-    m_layers.emplace_back(layer);
-}
-
-auto kdl::lib::scene::layers() const -> std::vector<std::shared_ptr<layer>>
-{
-    return m_layers;
+    private:
+        std::string m_name;
+        std::unordered_map<std::string, std::vector<lexeme>> m_attributes;
+    };
 }

@@ -99,52 +99,63 @@ auto kdl::lib::lexeme::is_one_of(const std::initializer_list<lexeme_type> &type)
 
 // MARK: - Conversion Functions
 
+auto kdl::lib::lexeme::base() const -> uint8_t
+{
+    switch (m_type) {
+        case lexeme_type::color:
+        case lexeme_type::hex:
+            return 16;
+        default:
+            return 10;
+    }
+}
+
 auto kdl::lib::lexeme::int8_value() const -> int8_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<int8_t>(std::stol(m_value));
+    return static_cast<int8_t>(std::stol(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::uint8_value() const -> uint8_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<uint8_t>(std::stoul(m_value));
+    return static_cast<uint8_t>(std::stoul(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::int16_value() const -> int16_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<int16_t>(std::stol(m_value));
+    return static_cast<int16_t>(std::stol(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::uint16_value() const -> uint16_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<uint16_t>(std::stoul(m_value));
+    return static_cast<uint16_t>(std::stoul(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::int32_value() const -> int32_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<int32_t>(std::stol(m_value));
+    return static_cast<int32_t>(std::stol(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::uint32_value() const -> uint32_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<uint32_t>(std::stoul(m_value));
+    return static_cast<uint32_t>(std::stoul(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::int64_value() const -> int64_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<int64_t>(std::stoll(m_value));
+    return static_cast<int64_t>(std::stoll(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::uint64_value() const -> uint64_t
 {
     // TODO: Handle overflow and underflow errors
-    return static_cast<uint64_t>(std::stoull(m_value));
+    return static_cast<uint64_t>(std::stoull(m_value, nullptr, base()));
 }
 
 auto kdl::lib::lexeme::double_value() const -> double
