@@ -21,6 +21,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <kdl/lexer/lexeme.hpp>
 
@@ -31,10 +32,16 @@ namespace kdl::lib
     public:
         explicit scene(const std::string& name);
 
+        [[nodiscard]] inline auto name() const -> std::string { return m_name; }
+
         auto set_attribute(const std::string& attribute, const lexeme& value) -> void;
+        auto set_attribute(const std::string& attribute, const std::vector<lexeme>& value) -> void;
+
+        auto has_attribute(const std::string& attribute) -> bool;
+        auto get_attribute(const std::string& attribute) -> std::vector<lexeme>&;
 
     private:
         std::string m_name;
-        std::unordered_map<std::string, lexeme> m_attributes;
+        std::unordered_map<std::string, std::vector<lexeme>> m_attributes;
     };
 }

@@ -34,6 +34,7 @@ namespace kdl::lib
     struct binary_type;
     struct binary_template;
     struct resource_type;
+    struct scene;
 
     class module: public std::enable_shared_from_this<module>
     {
@@ -51,6 +52,7 @@ namespace kdl::lib
         std::vector<std::shared_ptr<function>> m_functions;
         std::vector<std::shared_ptr<resource_type>> m_resource_type_definitions;
         std::vector<int> m_resource_declarations;
+        std::vector<std::shared_ptr<scene>> m_scenes;
 
     public:
         explicit module(const std::string& name, module_type = module_type::general, const std::weak_ptr<module>& parent = {});
@@ -79,6 +81,9 @@ namespace kdl::lib
 
         auto add_function(const std::shared_ptr<function>& fn) -> void;
         [[nodiscard]] auto function_named(const std::string& name, const std::string& type, const std::vector<std::string>& path = {}) -> std::weak_ptr<function>;
+
+        auto add_scene(const std::shared_ptr<scene>& scene) -> void;
+        [[nodiscard]] auto scenes() const -> std::vector<std::shared_ptr<scene>>;
     };
 
 }

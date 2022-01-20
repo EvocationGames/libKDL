@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #include <kdl/parser/sema/project/scene.hpp>
+#include <kdl/parser/sema/function/function_call.hpp>
 #include <kdl/schema/project/scene.hpp>
 #include <kdl/schema/module.hpp>
 #include <kdl/report/reporting.hpp>
@@ -29,7 +30,7 @@ namespace kdl::lib::spec::keywords
     constexpr const char *layer { "layer" };
 }
 
-auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std::shared_ptr<kdl::lib::module> &module) -> std::shared_ptr<class scene>
+auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std::shared_ptr<kdl::lib::module> &module) -> void
 {
     if (!consumer.expect_all({
         expect(lexeme_type::identifier, spec::keywords::scene).t(),
@@ -51,23 +52,48 @@ auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std:
         }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier).t(), expect(lexeme_type::equals).t(),
-            expect(lexeme_type::identifier).t()
+            expect(lexeme_type::identifier).f()
         })) {
-
             auto attribute = consumer.read();
             consumer.advance();
-            auto function_name = consumer.read();
-            if (auto fn = module->function_named(function_name.string_value(), "", {}).lock()){
 
+            std::vector<lexeme> v;
+            while (consumer.expect_any({
+                expect(lexeme_type::identifier).t(), expect(lexeme_type::color).t(),
+                expect(lexeme_type::any_integer).t(), expect(lexeme_type::any_string).t(),
+                expect(lexeme_type::resource_ref).t(), expect(lexeme_type::percentage).t(),
+                expect(lexeme_type::hex).t(), expect(lexeme_type::character).t(),
+            })) {
+                v.emplace_back(consumer.read());
             }
+
+            scene->set_attribute(attribute.string_value(), v);
         }
         else if (consumer.expect_all({
-            expect(lexeme_type::identifier).t(), expect(lexeme_type::equals).t()
+            expect(lexeme_type::identifier).t(), expect(lexeme_type::equals).t(),
+            expect(lexeme_type::identifier).t()
         })) {
-            // Determine if this is a function
+            auto attribute = consumer.read();
+            consumer.advance();
+
+            auto result = consumer.peek();
+            if (sema::function::call::look_ahead(consumer)) {
+                // We're looking at a function
+                result = sema::function::call::parse(consumer, module);
+            }
+            else {
+                consumer.advance();
+            }
+
+            scene->set_attribute(attribute.string_value(), result);
         }
         else {
             report::error(consumer.peek(), "Unexpected token in scene.");
         }
+
+        consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });
     }
+
+    consumer.assert_lexemes({ expect(lexeme_type::rbrace).t() });
+    module->add_scene(scene);
 }

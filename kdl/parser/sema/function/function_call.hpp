@@ -31,6 +31,6 @@ namespace kdl::lib
 
 namespace kdl::lib::sema::function::call
 {
-    auto is_call(lexeme_consumer& consumer) -> bool;
-    auto parser(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module) -> lexeme;
+    auto look_ahead(lexeme_consumer& consumer) -> bool;
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module) -> lexeme;
 }

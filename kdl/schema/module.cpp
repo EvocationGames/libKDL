@@ -25,6 +25,7 @@
 #include <kdl/schema/binary_template/binary_template.hpp>
 #include <kdl/schema/resource_type/resource_type.hpp>
 #include <kdl/schema/function/function.hpp>
+#include <kdl/schema/project/scene.hpp>
 
 // MARK: - Constructor
 
@@ -243,4 +244,16 @@ auto kdl::lib::module::function_named(const std::string& name, const std::string
     else {
         return {};
     }
+}
+
+// MARK: - Scenes
+
+auto kdl::lib::module::add_scene(const std::shared_ptr<scene>& scene) -> void
+{
+    m_scenes.emplace_back(scene);
+}
+
+auto kdl::lib::module::scenes() const -> std::vector<std::shared_ptr<scene>>
+{
+    return m_scenes;
 }

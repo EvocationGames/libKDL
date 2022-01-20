@@ -21,7 +21,7 @@
 #include <kdl/parser/sema/function/function_call.hpp>
 
 
-auto kdl::lib::sema::function::call::is_call(kdl::lib::lexeme_consumer &consumer) -> bool
+auto kdl::lib::sema::function::call::look_ahead(kdl::lib::lexeme_consumer &consumer) -> bool
 {
     auto path_length = 0;
 
@@ -30,7 +30,7 @@ auto kdl::lib::sema::function::call::is_call(kdl::lib::lexeme_consumer &consumer
     consumer.save_position();
     while (consumer.expect({ expect(lexeme_type::identifier).t() })) {
         consumer.advance();
-        if (consumer.expect({ expect(lexeme_type::dot).t() })) {
+        if (consumer.expect({ expect(lexeme_type::scope).t() })) {
             path_length++;
             consumer.advance();
             continue;
@@ -49,8 +49,8 @@ auto kdl::lib::sema::function::call::is_call(kdl::lib::lexeme_consumer &consumer
     return path_length > 0;
 }
 
-auto kdl::lib::sema::function::call::parser(kdl::lib::lexeme_consumer &consumer,
-                                            const std::shared_ptr<kdl::lib::module> &module) -> kdl::lib::lexeme
+auto kdl::lib::sema::function::call::parse(kdl::lib::lexeme_consumer &consumer,
+                                           const std::shared_ptr<kdl::lib::module> &module) -> kdl::lib::lexeme
 {
     return kdl::lib::lexeme(kdl::lib::lexeme_type::plus);
 }

@@ -18,33 +18,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/project/scene.hpp>
+#include <kdl/parser/result.hpp>
+#include <kdl/schema/module.hpp>
+#include <kdl/schema/namespace.hpp>
 
 // MARK: - Construction
 
-kdl::lib::scene::scene(const std::string &name)
-    : m_name(name)
+kdl::lib::parse_result::parse_result(const std::vector<std::shared_ptr<module>>& modules, const std::shared_ptr<name_space>& ns)
+    : m_modules(modules), m_global_namespace(ns)
 {
 }
 
-// MARK: - Attribute Management
+// MARK: - Accessors
 
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const lexeme &value) -> void
+auto kdl::lib::parse_result::modules() const -> std::vector<std::shared_ptr<module>>
 {
-    set_attribute(attribute, std::vector<lexeme>({value}));
-}
-
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const std::vector<lexeme> &value) -> void
-{
-    m_attributes.insert(std::pair(attribute, value));
-}
-
-auto kdl::lib::scene::get_attribute(const std::string &attribute) -> std::vector<lexeme> &
-{
-    return m_attributes.at(attribute);
-}
-
-auto kdl::lib::scene::has_attribute(const std::string &attribute) -> bool
-{
-    return (m_attributes.find(attribute) != m_attributes.end());
+    return m_modules;
 }

@@ -30,7 +30,7 @@ namespace kdl::lib
 
 namespace kdl::lib::sema::project::scene
 {
-    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module) -> std::shared_ptr<class scene>;
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module) -> void;
 }
 
 

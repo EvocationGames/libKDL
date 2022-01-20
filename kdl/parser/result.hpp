@@ -18,33 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/project/scene.hpp>
+#pragma once
 
-// MARK: - Construction
+#include <vector>
+#include <memory>
 
-kdl::lib::scene::scene(const std::string &name)
-    : m_name(name)
+namespace kdl::lib
 {
-}
+    class module;
+    class name_space;
 
-// MARK: - Attribute Management
+    class parse_result
+    {
+    public:
+        parse_result(const std::vector<std::shared_ptr<module>>& modules, const std::shared_ptr<name_space>& ns);
 
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const lexeme &value) -> void
-{
-    set_attribute(attribute, std::vector<lexeme>({value}));
-}
+        [[nodiscard]] auto modules() const -> std::vector<std::shared_ptr<module>>;
 
-auto kdl::lib::scene::set_attribute(const std::string &attribute, const std::vector<lexeme> &value) -> void
-{
-    m_attributes.insert(std::pair(attribute, value));
-}
-
-auto kdl::lib::scene::get_attribute(const std::string &attribute) -> std::vector<lexeme> &
-{
-    return m_attributes.at(attribute);
-}
-
-auto kdl::lib::scene::has_attribute(const std::string &attribute) -> bool
-{
-    return (m_attributes.find(attribute) != m_attributes.end());
+    private:
+        std::shared_ptr<name_space> m_global_namespace;
+        std::vector<std::shared_ptr<module>> m_modules;
+    };
 }

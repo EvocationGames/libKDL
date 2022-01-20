@@ -48,7 +48,7 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
 {
     if (!consumer.expect_all({
         expect(lexeme_type::directive).t(),
-        expect(lexeme_type::string).t()
+        expect(lexeme_type::identifier).t()
     })) {
         report::error(consumer.peek(), "Unexpected token sequence encountered.");
     }
