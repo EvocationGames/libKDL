@@ -30,7 +30,7 @@ namespace kdl::lib
         any_integer = -2, any_string = -3,
         any = -1, unknown = 0,
         integer, percentage, resource_ref, decimal, hex, lexpr, rexpr, var,
-        string, character, identifier, directive,
+        string, character, identifier, directive, color,
         lbrace, rbrace, lparen, rparen, langle, rangle, lbracket, rbracket,
         exclaim, dollar, carat, amp, star, plus, minus,
         equals, slash, bar, question, dot, comma, tilde,
@@ -47,6 +47,7 @@ namespace kdl::lib
         case lexeme_type::resource_ref: return "resource-reference";
         case lexeme_type::decimal: return "decimal";
         case lexeme_type::hex: return "hex";
+        case lexeme_type::color: return "color";
         case lexeme_type::lexpr: return "start-expression";
         case lexeme_type::rexpr: return "end-expression";
         case lexeme_type::var: return "variable";

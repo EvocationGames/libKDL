@@ -124,6 +124,10 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
             m_in_expr = false;
             inject_lexeme(construct_lexeme(lexeme_type::rexpr, read()));
         }
+        else if (test(lexical_rule::sequence<'c', '#'>::matches, 0, 2) && test(lexical_rule::numeric::hexadecimal::matches, 2, 8)) {
+            advance(2);
+            inject_lexeme(construct_lexeme(lexeme_type::color, read(8)));
+        }
         else if (test(lexical_rule::match<'#'>::yes)) {
             advance();
 
