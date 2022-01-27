@@ -183,7 +183,12 @@ auto kdl::lib::module::binary_template_named(const std::string& name, const std:
     else {
         return {};
     }
-};
+}
+
+auto kdl::lib::module::binary_templates() const -> const std::vector<std::shared_ptr<binary_template>> &
+{
+    return m_template_definitions;
+}
 
 // MARK: - Resource Type Definitions
 
@@ -213,7 +218,12 @@ auto kdl::lib::module::resource_type_named(const std::string& name, const std::v
     else {
         return {};
     }
-};
+}
+
+auto kdl::lib::module::resource_types() const -> const std::vector<std::shared_ptr<resource_type>>&
+{
+    return m_resource_type_definitions;
+}
 
 // MARK: - Functions
 

@@ -48,9 +48,11 @@ namespace kdl::lib
         [[nodiscard]] auto name() const -> std::string;
         [[nodiscard]] auto default_value() const -> std::optional<lexeme>;
 
-         auto add_symbol(const std::shared_ptr<struct resource_field_symbol>& symbol) -> void;
-         [[nodiscard]] auto symbol_named(const std::string& name) const -> std::weak_ptr<struct resource_field_symbol>;
+        auto add_symbol(const std::shared_ptr<struct resource_field_symbol>& symbol) -> void;
+        [[nodiscard]] auto symbol_named(const std::string& name) const -> std::weak_ptr<struct resource_field_symbol>;
+        [[nodiscard]] auto symbols() const -> const std::vector<std::shared_ptr<struct resource_field_symbol>>&;
 
+        [[nodiscard]] auto binary_template_field() const -> std::shared_ptr<struct binary_template_field>;
         [[nodiscard]] auto expected_value_lexeme_type() const -> lexeme_type;
     };
 }

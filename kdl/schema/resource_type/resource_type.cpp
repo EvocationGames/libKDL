@@ -59,3 +59,8 @@ auto kdl::lib::resource_type::add_field(const std::shared_ptr<struct resource_fi
 {
     m_fields.emplace_back(field);
 }
+
+auto kdl::lib::resource_type::fields() const -> const std::vector<std::shared_ptr<resource_field>>&
+{
+    return m_fields;
+}

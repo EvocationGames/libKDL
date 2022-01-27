@@ -42,6 +42,7 @@ namespace kdl::lib
         [[nodiscard]] auto name() const -> std::string;
 
         auto add_value(const std::shared_ptr<struct resource_field_value>& value) -> void;
+        [[nodiscard]] auto values() const -> const std::vector<std::shared_ptr<struct resource_field_value>>&;
     };
 }
 

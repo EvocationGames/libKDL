@@ -48,6 +48,7 @@ namespace kdl::lib
         [[nodiscard]] auto binary_template() const -> std::weak_ptr<struct binary_template>;
 
         auto add_field(const std::shared_ptr<struct resource_field>& field) -> void;
+        [[nodiscard]] auto fields() const -> const std::vector<std::shared_ptr<resource_field>>&;
     };
 }
 

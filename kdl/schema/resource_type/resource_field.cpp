@@ -48,3 +48,8 @@ auto kdl::lib::resource_field::add_value(const std::shared_ptr<struct resource_f
 {
     m_values.emplace_back(value);
 }
+
+auto kdl::lib::resource_field::values() const -> const std::vector<std::shared_ptr<struct resource_field_value>> &
+{
+    return m_values;
+}

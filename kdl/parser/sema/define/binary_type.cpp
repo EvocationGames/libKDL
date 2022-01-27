@@ -28,6 +28,7 @@ namespace kdl::lib::spec::keyword
     constexpr const char *isa { "isa" };
     constexpr const char *integer { "integer" };
     constexpr const char *string { "string" };
+    constexpr const char *color { "color" };
     constexpr const char *size { "size" };
     constexpr const char *null_terminated { "null_terminated" };
     constexpr const char *counted { "counted" };
@@ -44,6 +45,7 @@ namespace kdl::lib::sema::define::binary_type::encoding
 
 auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const std::shared_ptr<struct binary_type>& type) -> void
 {
+    auto name = consumer.peek(-1);
     while (consumer.expect( expect(lexeme_type::rbrace).f() )) {
 
         if (consumer.expect_all({
@@ -58,6 +60,9 @@ auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const
             }
             else if (isa_type.string_value() == spec::keyword::string) {
                 type->set_isa(binary_type_isa::string);
+            }
+            else if (isa_type.string_value() == spec::keyword::color) {
+                type->set_isa(binary_type_isa::color);
             }
             else {
                 report::error(isa_type, "Unrecognised binary type isa '" + isa_type.string_value() + "'");
@@ -116,5 +121,9 @@ auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const
         }
 
         consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });
+    }
+
+    if (type->isa() == binary_type_isa::color && type->size() != 32) {
+        report::warn(name, "Color binary type should be unsigned and have a size of 32.");
     }
 }

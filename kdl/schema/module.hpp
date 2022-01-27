@@ -75,9 +75,11 @@ namespace kdl::lib
 
         auto add_binary_template_definition(const std::shared_ptr<binary_template>& tmpl) -> void;
         [[nodiscard]] auto binary_template_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<binary_template>;
+        [[nodiscard]] auto binary_templates() const -> const std::vector<std::shared_ptr<binary_template>>&;
 
         auto add_resource_type_definition(const std::shared_ptr<resource_type>& type) -> void;
         [[nodiscard]] auto resource_type_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<resource_type>;
+        [[nodiscard]] auto resource_types() const -> const std::vector<std::shared_ptr<resource_type>>&;
 
         auto add_function(const std::shared_ptr<function>& fn) -> void;
         [[nodiscard]] auto function_named(const std::string& name, const std::string& type, const std::vector<std::string>& path = {}) -> std::weak_ptr<function>;

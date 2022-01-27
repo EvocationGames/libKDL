@@ -25,7 +25,7 @@ namespace kdl::lib
 {
     enum class binary_type_isa : int
     {
-        integer, string
+        integer, string, color
     };
 }
 

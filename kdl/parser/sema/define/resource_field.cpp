@@ -64,6 +64,7 @@ auto kdl::lib::sema::define::resource_field::parse(kdl::lib::lexeme_consumer &co
                 expect(lexeme_type::string).t(),
                 expect(lexeme_type::identifier).t(),
                 expect(lexeme_type::integer).t(),
+                expect(lexeme_type::hex).t(),
                 expect(lexeme_type::percentage).t(),
                 expect(lexeme_type::resource_ref).t()
             })) {
@@ -157,8 +158,14 @@ auto kdl::lib::sema::define::resource_field::parse(kdl::lib::lexeme_consumer &co
                 break;
 
             case lexeme_type::integer:
-                if (value_type != lexeme_type::integer && value_type != lexeme_type::percentage) {
+                if (value_type != lexeme_type::integer && value_type != lexeme_type::percentage && value_type != lexeme_type::hex) {
                     report::error(default_value.value(), "Value was expected to be an integer.");
+                }
+                break;
+
+            case lexeme_type::color:
+                if (value_type != lexeme_type::hex || value_type != lexeme_type::color) {
+                    report::error(default_value.value(), "Value was expected to be a color representation.");
                 }
                 break;
 

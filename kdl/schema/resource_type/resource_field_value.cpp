@@ -52,12 +52,18 @@ auto kdl::lib::resource_field_value::set_default_value(const kdl::lib::lexeme &l
 
 // MARK: - Data/Value Types
 
+auto kdl::lib::resource_field_value::binary_template_field() const -> std::shared_ptr<struct binary_template_field>
+{
+    return m_binary_template_field.lock();
+}
+
 auto kdl::lib::resource_field_value::expected_value_lexeme_type() const -> kdl::lib::lexeme_type
 {
     if (auto bin_type = m_binary_template_field.lock()) {
         switch (bin_type->type()->isa()) {
             case binary_type_isa::integer:  return lexeme_type::integer;
             case binary_type_isa::string:   return lexeme_type::string;
+            case binary_type_isa::color:    return lexeme_type::integer;
         }
     }
     return lexeme_type::integer;
@@ -78,4 +84,9 @@ auto kdl::lib::resource_field_value::symbol_named(const std::string &name) const
         }
     }
     return {};
+}
+
+auto kdl::lib::resource_field_value::symbols() const -> const std::vector<std::shared_ptr<struct resource_field_symbol>> &
+{
+    return m_symbols;
 }
