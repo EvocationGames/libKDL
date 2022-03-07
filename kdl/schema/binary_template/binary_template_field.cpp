@@ -24,8 +24,8 @@
 
 // MARK: - Construction
 
-kdl::lib::binary_template_field::binary_template_field(const std::shared_ptr<binary_type>& type, const std::string& name)
-    : m_type(type), m_name(name)
+kdl::lib::binary_template_field::binary_template_field(const std::shared_ptr<binary_type>& type, const std::unordered_map<std::string, lexeme>& type_args, const std::string& name)
+    : m_type(type), m_name(name), m_type_args(type_args)
 {
 
 }
@@ -42,3 +42,7 @@ auto kdl::lib::binary_template_field::name() const -> std::string
     return m_name;
 }
 
+auto kdl::lib::binary_template_field::type_args() const -> std::unordered_map<std::string, lexeme>
+{
+    return m_type_args;
+}

@@ -18,8 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_LEXER_LEXER_HPP)
-#define KDL_LEXER_LEXER_HPP
+#pragma once
 
 #include <vector>
 #include <string>
@@ -34,20 +33,6 @@ namespace kdl::lib
 
     class lexer
     {
-    private:
-        std::vector<std::string> m_flags {{ "extended" }};
-        std::vector<lexeme> m_lexemes;
-        std::vector<std::size_t> m_cursor_stack;
-        std::shared_ptr<source_file> m_source;
-        std::string m_consume_slice;
-        std::size_t m_cursor { 0 };
-        std::size_t m_line { 1 };
-        std::size_t m_line_offset { 0 };
-        std::size_t m_marker { 0 };
-        std::size_t m_expr_paren_balance { 0 };
-        bool m_in_expr { false };
-        bool m_ignore_lexemes { false };
-
     public:
         explicit lexer(const std::shared_ptr<source_file>& source);
 
@@ -85,8 +70,20 @@ namespace kdl::lib
         [[nodiscard]] auto construct_lexeme(lexeme_type type) const -> lexeme;
         [[nodiscard]] auto construct_lexeme(lexeme_type type, const std::string& value) const -> lexeme;
         auto inject_lexeme(lexeme lx) -> void;
+
+    private:
+        std::vector<std::string> m_flags {{ "extended" }};
+        std::vector<lexeme> m_lexemes;
+        std::vector<std::size_t> m_cursor_stack;
+        std::shared_ptr<source_file> m_source;
+        std::string m_consume_slice;
+        std::size_t m_cursor { 0 };
+        std::size_t m_line { 1 };
+        std::size_t m_line_offset { 0 };
+        std::size_t m_marker { 0 };
+        std::size_t m_expr_paren_balance { 0 };
+        bool m_in_expr { false };
+        bool m_ignore_lexemes { false };
     };
 
 }
-
-#endif //KDL_LEXER_LEXER_HPP

@@ -25,13 +25,11 @@
 
 namespace kdl::lib
 {
-    class module;
-    class scene;
+    class resource;
+    class resource_field;
 }
 
-namespace kdl::lib::sema::project::scene::layer
+namespace kdl::lib::sema::declare::resource::values
 {
-    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::scene>& scene, const std::shared_ptr<kdl::lib::module>& module) -> void;
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::resource>& resource, const std::shared_ptr<kdl::lib::resource_field>& field) -> void;
 }
-
-

@@ -32,6 +32,7 @@ namespace kdl::lib::spec::keyword
     constexpr const char *size { "size" };
     constexpr const char *null_terminated { "null_terminated" };
     constexpr const char *counted { "counted" };
+    constexpr const char *fixed { "fixed" };
     constexpr const char *chr { "char" };
     constexpr const char *is_signed { "is_signed" };
 }
@@ -74,7 +75,25 @@ auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const
             expect(lexeme_type::integer).t()
         })) {
             consumer.advance(2);
-            type->set_size(consumer.read().uint32_value());
+            type->set_size(consumer.read());
+        }
+        else if (consumer.expect_all({
+            expect(lexeme_type::identifier, spec::keyword::size).t(),
+            expect(lexeme_type::equals).t(),
+            expect(lexeme_type::identifier, spec::keyword::null_terminated).t(),
+            expect(lexeme_type::integer).t(),
+        })) {
+            consumer.advance(3);
+            type->set_size(consumer.read(), kdl::lib::binary_type::size_type::null_terminated);
+        }
+        else if (consumer.expect_all({
+            expect(lexeme_type::identifier, spec::keyword::size).t(),
+            expect(lexeme_type::equals).t(),
+            expect(lexeme_type::identifier, spec::keyword::null_terminated).t(),
+            expect(lexeme_type::var).t(),
+        })) {
+            consumer.advance(3);
+            type->set_size(consumer.read(), kdl::lib::binary_type::size_type::null_terminated);
         }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier, spec::keyword::size).t(),
@@ -82,8 +101,7 @@ auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const
             expect(lexeme_type::identifier, spec::keyword::null_terminated).t()
         })) {
             consumer.advance(3);
-            type->set_size(0);
-            type->set_null_terminated(true);
+            type->set_size(lexeme(lexeme_type::integer, "0"), kdl::lib::binary_type::size_type::null_terminated);
         }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier, spec::keyword::size).t(),
@@ -92,7 +110,16 @@ auto kdl::lib::sema::define::binary_type::parse(lexeme_consumer &consumer, const
             expect(lexeme_type::integer).t()
         })) {
             consumer.advance(3);
-            type->set_count_width(consumer.read().uint32_value());
+            type->set_size(consumer.read(), kdl::lib::binary_type::size_type::count);
+        }
+        else if (consumer.expect_all({
+            expect(lexeme_type::identifier, spec::keyword::size).t(),
+            expect(lexeme_type::equals).t(),
+            expect(lexeme_type::identifier, spec::keyword::fixed).t(),
+            expect(lexeme_type::integer).t()
+        })) {
+            consumer.advance(3);
+            type->set_size(consumer.read(), kdl::lib::binary_type::size_type::fixed);
         }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier, spec::keyword::chr).t(),

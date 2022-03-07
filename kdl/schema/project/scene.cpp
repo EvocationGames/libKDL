@@ -19,7 +19,6 @@
 // SOFTWARE.
 
 #include <kdl/schema/project/scene.hpp>
-#include <kdl/schema/project/layer.hpp>
 
 // MARK: - Construction
 
@@ -50,14 +49,18 @@ auto kdl::lib::scene::has_attribute(const std::string &attribute) -> bool
     return (m_attributes.find(attribute) != m_attributes.end());
 }
 
-// MARK: - Layer Management
+// MARK: - Scene Events
 
-auto kdl::lib::scene::add_layer(const std::shared_ptr<layer>& layer) -> void
+auto kdl::lib::scene::set_event_scripts(const std::string& event, const std::vector<lexeme>& scripts) -> void
 {
-    m_layers.emplace_back(layer);
+    m_events.insert(std::pair(event, scripts));
 }
 
-auto kdl::lib::scene::layers() const -> std::vector<std::shared_ptr<layer>>
+auto kdl::lib::scene::event_scripts(const std::string& event) -> std::vector<lexeme>
 {
-    return m_layers;
+    auto it = m_events.find(event);
+    if (it == m_events.end()) {
+        return {};
+    }
+    return it->second;
 }

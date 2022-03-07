@@ -18,45 +18,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/schema/project/layer.hpp>
+#pragma once
 
-// MARK: - Construction
+#include <memory>
+#include <kdl/parser/consumer/consumer.hpp>
 
-kdl::lib::layer::layer(const std::string &name)
-    : m_name(name)
+namespace kdl::lib
 {
+    class module;
+    class resource_type;
 }
 
-// MARK: - Attribute Management
-
-auto kdl::lib::layer::set_attribute(const std::string &attribute, const lexeme &value) -> void
+namespace kdl::lib::sema::declare::new_resource
 {
-    set_attribute(attribute, std::vector<lexeme>({value}));
-}
-
-auto kdl::lib::layer::set_attribute(const std::string &attribute, const std::vector<lexeme> &value) -> void
-{
-    m_attributes.insert(std::pair(attribute, value));
-}
-
-auto kdl::lib::layer::get_attribute(const std::string &attribute) -> std::vector<lexeme> &
-{
-    return m_attributes.at(attribute);
-}
-
-auto kdl::lib::layer::has_attribute(const std::string &attribute) -> bool
-{
-    return (m_attributes.find(attribute) != m_attributes.end());
-}
-
-// MARK: - Layer Management
-
-auto kdl::lib::layer::add_entity(const std::shared_ptr<entity>& entity) -> void
-{
-    m_entities.emplace_back(entity);
-}
-
-auto kdl::lib::layer::entities() const -> std::vector<std::shared_ptr<entity>>
-{
-    return m_entities;
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module, const std::shared_ptr<kdl::lib::resource_type>& type) -> void;
 }

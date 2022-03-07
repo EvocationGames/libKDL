@@ -25,6 +25,7 @@
 #include <kdl/parser/sema/directive/copyright.hpp>
 #include <kdl/parser/sema/directive/out.hpp>
 #include <kdl/parser/sema/define/define.hpp>
+#include <kdl/parser/sema/declare/declare.hpp>
 #include <kdl/parser/sema/project/scene.hpp>
 #include <kdl/schema/namespace.hpp>
 #include <kdl/report/reporting.hpp>
@@ -44,7 +45,7 @@ namespace kdl::lib::spec::keywords
     constexpr const char *scene { "scene" };
 }
 
-auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_ptr<name_space>& ns) -> std::shared_ptr<class module>
+auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_ptr<name_space>& ns, std::vector<std::shared_ptr<class module>>& modules) -> void
 {
     if (!consumer.expect_all({
         expect(lexeme_type::directive).t(),
@@ -55,19 +56,41 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
 
     std::shared_ptr<class module> module;
     auto directive = consumer.read();
+    auto module_name = consumer.read();
+    auto module_type = module_type::module;
+
     if (directive.string_value() == spec::keywords::project) {
-        module = std::make_shared<class module>(consumer.read().string_value(), module_type::project);
+        module_type = module_type::project;
     }
     else if (directive.string_value() == spec::keywords::module) {
-        module = std::make_shared<class module>(consumer.read().string_value(), module_type::module);
+        module_type = module_type::module;
     }
     else {
         report::error(directive, "Unexpected directive.");
     }
 
-    // Assign the namespace that we've been provided, until the user sets one up.
-    module->set_namespace(ns);
+    // Try and find an existing module to use, and only create a new one if it doesn't exist.
+    for (auto& existing_module : modules) {
+        if (existing_module->name() == module_name.string_value()) {
+            module = existing_module;
+            break;
+        }
+    }
 
+    if (!module) {
+        module = std::make_shared<class module>(module_name.string_value(), module_type);
+        modules.emplace_back(module);
+
+        // Assign the namespace that we've been provided, until the user sets one up.
+        module->set_namespace(ns);
+    }
+
+    // Parse the module itself.
+    parse_into(consumer, module);
+}
+
+auto kdl::lib::sema::module::parse_into(kdl::lib::lexeme_consumer &consumer, const std::shared_ptr<struct module> &module) -> void
+{
     consumer.assert_lexemes({ expect(lexeme_type::lbrace).t() });
     while (consumer.expect({ expect(lexeme_type::rbrace).f() })) {
 
@@ -101,7 +124,7 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
             sema::define::parse(consumer, module);
         }
         else if (consumer.expect({ expect(lexeme_type::identifier, spec::keywords::declare).t() })) {
-
+            sema::declare::parse(consumer, module);
         }
         else if (consumer.expect({ expect(lexeme_type::identifier, spec::keywords::component).t() })) {
 
@@ -117,6 +140,4 @@ auto kdl::lib::sema::module::parse(lexeme_consumer& consumer, const std::weak_pt
         consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });
     }
     consumer.assert_lexemes({ expect(lexeme_type::rbrace).t() });
-
-    return module;
 }

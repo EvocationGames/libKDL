@@ -23,6 +23,7 @@
 #include <kdl/lexer/lexer.hpp>
 #include <kdl/parser/sema/directive/out.hpp>
 #include <kdl/parser/sema/module/module.hpp>
+#include <kdl/parser/sema/directive/import.hpp>
 #include <kdl/schema/namespace.hpp>
 #include <kdl/report/reporting.hpp>
 
@@ -31,6 +32,7 @@ namespace kdl::lib::spec::keyword
     constexpr const char *project { "project" };
     constexpr const char *module { "module" };
     constexpr const char *out { "out" };
+    constexpr const char *import { "import" };
 };
 
 // MARK: - Top Level Parser
@@ -51,11 +53,13 @@ auto kdl::lib::parser::parse(std::vector<lexeme> lexemes) -> void
             expect(lexeme_type::directive, spec::keyword::project).t(),
             expect(lexeme_type::directive, spec::keyword::module).t()
         })) {
-            auto module = sema::module::parse(m_consumer, m_global_namespace);
-            m_modules.emplace_back(module);
+            sema::module::parse(m_consumer, m_global_namespace, m_modules);
         }
         else if (m_consumer.expect( expect(lexeme_type::directive, spec::keyword::out).t() )) {
             sema::directive::out::parse(m_consumer);
+        }
+        else if (m_consumer.expect( expect(lexeme_type::directive, spec::keyword::import).t() )) {
+            sema::directive::import::parse(m_consumer);
         }
         else {
             report::error(m_consumer.peek(), "Unexpected lexeme encountered.");

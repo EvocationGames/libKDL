@@ -18,13 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_SCHEMA_MODULE_HPP)
-#define KDL_SCHEMA_MODULE_HPP
+#pragma once
 
 #include <string>
 #include <vector>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <kdl/schema/module_type.hpp>
 
 namespace kdl::lib
@@ -34,26 +34,11 @@ namespace kdl::lib
     struct binary_type;
     struct binary_template;
     struct resource_type;
+    struct resource;
     struct scene;
 
     class module: public std::enable_shared_from_this<module>
     {
-    private:
-        module_type m_type { module_type::general };
-        std::weak_ptr<name_space> m_namespace;
-        std::weak_ptr<module> m_parent;
-        std::vector<std::shared_ptr<module>> m_submodules;
-        std::string m_module_name;
-        std::string m_version;
-        std::vector<std::string> m_authors;
-        std::vector<std::string> m_copyright;
-        std::vector<std::shared_ptr<binary_type>> m_binary_type_definitions;
-        std::vector<std::shared_ptr<binary_template>> m_template_definitions;
-        std::vector<std::shared_ptr<function>> m_functions;
-        std::vector<std::shared_ptr<resource_type>> m_resource_type_definitions;
-        std::vector<int> m_resource_declarations;
-        std::vector<std::shared_ptr<scene>> m_scenes;
-
     public:
         explicit module(const std::string& name, module_type = module_type::general, const std::weak_ptr<module>& parent = {});
 
@@ -63,6 +48,7 @@ namespace kdl::lib
         auto add_copyright(const std::string& copy) -> void;
         auto add_submodule(const std::shared_ptr<module>& submodule) -> void;
 
+        [[nodiscard]] auto name() const -> std::string;
         [[nodiscard]] auto submodule_named(const std::string&) const -> std::weak_ptr<module>;
         [[nodiscard]] auto copyright(bool complete = true) const -> std::vector<std::string>;
         [[nodiscard]] auto authors(bool complete = true) const -> std::vector<std::string>;
@@ -79,15 +65,33 @@ namespace kdl::lib
 
         auto add_resource_type_definition(const std::shared_ptr<resource_type>& type) -> void;
         [[nodiscard]] auto resource_type_named(const std::string& name, const std::vector<std::string>& path = {}) -> std::weak_ptr<resource_type>;
-        [[nodiscard]] auto resource_types() const -> const std::vector<std::shared_ptr<resource_type>>&;
+        [[nodiscard]] auto resource_types() -> std::vector<std::shared_ptr<resource_type>>;
 
         auto add_function(const std::shared_ptr<function>& fn) -> void;
         [[nodiscard]] auto function_named(const std::string& name, const std::string& type, const std::vector<std::string>& path = {}) -> std::weak_ptr<function>;
 
+        auto add_resource(const std::shared_ptr<resource>& res) -> void;
+        [[nodiscard]] auto resources(const std::string& type) const -> std::vector<std::shared_ptr<resource>>;
+
         auto add_scene(const std::shared_ptr<scene>& scene) -> void;
         [[nodiscard]] auto scenes() const -> std::vector<std::shared_ptr<scene>>;
+
+    private:
+        module_type m_type { module_type::general };
+        std::weak_ptr<name_space> m_namespace;
+        std::weak_ptr<module> m_parent;
+        std::vector<std::shared_ptr<module>> m_submodules;
+        std::string m_module_name;
+        std::string m_version;
+        std::vector<std::string> m_authors;
+        std::vector<std::string> m_copyright;
+        std::vector<std::shared_ptr<binary_type>> m_binary_type_definitions;
+        std::vector<std::shared_ptr<binary_template>> m_template_definitions;
+        std::vector<std::shared_ptr<function>> m_functions;
+        std::vector<std::shared_ptr<resource_type>> m_resource_type_definitions;
+        std::unordered_map<std::string, std::vector<std::shared_ptr<resource>>> m_resource_declarations;
+        std::vector<std::shared_ptr<scene>> m_scenes;
+
     };
 
 }
-
-#endif //KDL_SCHEMA_MODULE_HPP

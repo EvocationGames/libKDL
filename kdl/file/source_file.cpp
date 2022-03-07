@@ -57,3 +57,22 @@ auto kdl::lib::source_file::size() const -> std::size_t
 {
     return m_source_size;
 }
+
+// MARK: - Path Operations
+
+auto kdl::lib::source_file::relative_path(const std::string &rel) const -> std::string
+{
+    // Get the parent path...
+    auto parent = m_file_path.substr(0, m_file_path.find_last_of('/'));
+    if (!rel.empty()) {
+        if (rel[0] == '/') {
+            return parent + rel;
+        }
+        else {
+            return parent + "/" + rel;
+        }
+    }
+    else {
+        return parent;
+    }
+}

@@ -83,9 +83,14 @@ auto kdl::lib::lexeme_consumer::insert(std::vector<lexeme> lx, std::int32_t offs
     }
 }
 
-auto kdl::lib::lexeme_consumer::push_lexemes(std::initializer_list<lexeme> lexemes) -> void
+auto kdl::lib::lexeme_consumer::push_lexemes(std::initializer_list<lexeme> lexemes, size_t offset) -> void
 {
-    m_pushed_lexemes = std::vector<lexeme>(lexemes);
+    push_lexemes(std::vector<lexeme>(lexemes), offset);
+}
+
+auto kdl::lib::lexeme_consumer::push_lexemes(std::vector<lexeme> lexemes, size_t offset) -> void
+{
+    m_pushed_lexemes.insert(m_pushed_lexemes.begin(), m_lexemes.begin(), m_lexemes.end());
 }
 
 auto kdl::lib::lexeme_consumer::drop_lexemes() -> void

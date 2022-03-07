@@ -82,6 +82,14 @@ auto kdl::lib::sema::define::resource_type::parse(kdl::lib::lexeme_consumer &con
         })) {
             // Setup an assertion for resources of this type
         }
+        else if (consumer.expect(
+            expect(lexeme_type::directive, "use_code_editor").t()
+        )) {
+            // NOTE: This is a specific flag for shipyard, to state that the resource should be opened in a
+            // code editor.
+            type->set_uses_code_editor(true);
+            consumer.advance();
+        }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier, "field").t(),
             expect(lexeme_type::identifier).t()

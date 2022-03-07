@@ -27,8 +27,6 @@
 
 namespace kdl::lib
 {
-    struct layer;
-
     struct scene
     {
     public:
@@ -42,12 +40,12 @@ namespace kdl::lib
         auto has_attribute(const std::string& attribute) -> bool;
         auto get_attribute(const std::string& attribute) -> std::vector<lexeme>&;
 
-        auto add_layer(const std::shared_ptr<layer>& layer) -> void;
-        [[nodiscard]] auto layers() const -> std::vector<std::shared_ptr<layer>>;
+        auto set_event_scripts(const std::string& event, const std::vector<lexeme>& scripts) -> void;
+        auto event_scripts(const std::string& event) -> std::vector<lexeme>;
 
     private:
         std::string m_name;
         std::unordered_map<std::string, std::vector<lexeme>> m_attributes;
-        std::vector<std::shared_ptr<layer>> m_layers;
+        std::unordered_map<std::string, std::vector<lexeme>> m_events;
     };
 }

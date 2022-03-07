@@ -20,34 +20,10 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <kdl/lexer/lexeme.hpp>
+#include <kdl/parser/consumer/consumer.hpp>
 
-namespace kdl::lib
+namespace kdl::lib::sema::directive::import
 {
-    struct entity;
-
-    struct layer
-    {
-    public:
-        explicit layer(const std::string& name);
-
-        [[nodiscard]] inline auto name() const -> std::string { return m_name; }
-
-        auto set_attribute(const std::string& attribute, const lexeme& value) -> void;
-        auto set_attribute(const std::string& attribute, const std::vector<lexeme>& value) -> void;
-
-        auto has_attribute(const std::string& attribute) -> bool;
-        auto get_attribute(const std::string& attribute) -> std::vector<lexeme>&;
-
-        auto add_entity(const std::shared_ptr<entity>& layer) -> void;
-        [[nodiscard]] auto entities() const -> std::vector<std::shared_ptr<entity>>;
-
-    private:
-        std::string m_name;
-        std::unordered_map<std::string, std::vector<lexeme>> m_attributes;
-        std::vector<std::shared_ptr<entity>> m_entities;
-    };
+    auto parse(lexeme_consumer& consumer) -> void;
 }
+

@@ -22,6 +22,7 @@
 #define KDL_PARSER_SEMA_MODULE_HPP
 
 #include <memory>
+#include <vector>
 #include <kdl/parser/consumer/consumer.hpp>
 
 namespace kdl::lib
@@ -32,7 +33,8 @@ namespace kdl::lib
 
 namespace kdl::lib::sema::module
 {
-    auto parse(lexeme_consumer& consumer, const std::weak_ptr<name_space>& ns) -> std::shared_ptr<class module>;
+    auto parse(lexeme_consumer& consumer, const std::weak_ptr<name_space>& ns, std::vector<std::shared_ptr<class module>>& modules) -> void;
+    auto parse_into(lexeme_consumer& consumer, const std::shared_ptr<class module>& module) -> void;
 }
 
 #endif //KDL_PARSER_SEMA_PROJECT_PROJECT_HPP

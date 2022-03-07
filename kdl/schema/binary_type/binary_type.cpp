@@ -20,6 +20,7 @@
 
 #include <kdl/schema/binary_type/binary_type.hpp>
 #include <kdl/schema/function/function.hpp>
+#include <kdl/report/reporting.hpp>
 
 // MARK: - Construction
 
@@ -41,19 +42,10 @@ auto kdl::lib::binary_type::set_signed(bool f) -> void
     m_signed = f;
 }
 
-auto kdl::lib::binary_type::set_null_terminated(bool f) -> void
-{
-    m_null_terminated = f;
-}
-
-auto kdl::lib::binary_type::set_size(std::size_t size) -> void
+auto kdl::lib::binary_type::set_size(const lexeme& size, enum size_type type) -> void
 {
     m_size = size;
-}
-
-auto kdl::lib::binary_type::set_count_width(std::size_t count) -> void
-{
-    m_count_width = count;
+    m_size_type = type;
 }
 
 auto kdl::lib::binary_type::set_char_encoding(binary_type_char_encoding enc) -> void
@@ -64,6 +56,11 @@ auto kdl::lib::binary_type::set_char_encoding(binary_type_char_encoding enc) -> 
 auto kdl::lib::binary_type::add_function(const std::shared_ptr<struct function>& fn) -> void
 {
     m_functions.emplace_back(fn);
+}
+
+auto kdl::lib::binary_type::set_attachments(const std::vector<lexeme> &attachments) -> void
+{
+    m_attachments = attachments;
 }
 
 
@@ -84,19 +81,24 @@ auto kdl::lib::binary_type::is_signed() const -> bool
     return m_signed;
 }
 
-auto kdl::lib::binary_type::is_null_terminated() const -> bool
+auto kdl::lib::binary_type::size_type() const -> enum size_type
 {
-    return m_null_terminated;
+    return m_size_type;
 }
 
-auto kdl::lib::binary_type::size() const -> std::size_t
-{
-    return m_size;
-}
 
-auto kdl::lib::binary_type::count_width() const -> std::size_t
+auto kdl::lib::binary_type::size(const std::unordered_map<std::string, lexeme>& vars) const -> std::size_t
 {
-    return m_count_width;
+    if (m_size.is(lexeme_type::var)) {
+        auto it = vars.find(m_size.string_value());
+        if (it != vars.end()) {
+            return it->second.uint64_value();
+        }
+        else {
+            report::error(m_size, "Variable not found.");
+        }
+    }
+    return m_size.uint64_value();
 }
 
 auto kdl::lib::binary_type::char_encoding() const -> binary_type_char_encoding
@@ -113,4 +115,24 @@ auto kdl::lib::binary_type::function_named(const std::string& name) const -> std
         }
     }
     return {};
+}
+
+auto kdl::lib::binary_type::attachments() const -> std::vector<lexeme>
+{
+    return m_attachments;
+}
+
+auto kdl::lib::binary_type::is_null_terminated() const -> bool
+{
+    return m_size_type == size_type::null_terminated;
+}
+
+auto kdl::lib::binary_type::is_counted() const -> bool
+{
+    return m_size_type == size_type::count;
+}
+
+auto kdl::lib::binary_type::is_fixed_size() const -> bool
+{
+    return m_size_type == size_type::fixed;
 }

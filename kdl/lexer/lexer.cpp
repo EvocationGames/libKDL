@@ -131,6 +131,28 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
         else if (test(lexical_rule::match<'#'>::yes)) {
             advance();
 
+            std::string reference;
+
+            // Check if we have an identifier leading the id itself
+            // i.e.  #TypeName.000
+            if (test(lexical_rule::identifier::matches)) {
+                consume(lexical_rule::identifier::matches);
+                reference += m_consume_slice;
+
+                while (test(lexical_rule::sequence<':', ':'>::matches, 0, 2)) {
+                    advance(2);
+                    consume(lexical_rule::identifier::matches);
+                    reference += "::" + m_consume_slice;
+                }
+
+                if (test(lexical_rule::match<'.'>::no)) {
+                    report::error(m_lexemes.back(), "Expected '.' after resource type name.");
+                }
+
+                advance();
+                reference += ".";
+            }
+
             auto negative = test(lexical_rule::match<'-'>::yes);
             if (negative) {
                 advance();
@@ -140,6 +162,8 @@ auto kdl::lib::lexer::scan(bool omit_comments) -> std::vector<lexeme>
             if (negative) {
                 m_consume_slice.insert(0, 1, '-');
             }
+            m_consume_slice = reference + m_consume_slice;
+
             inject_lexeme(construct_lexeme(lexeme_type::resource_ref));
         }
         else if (test(lexical_rule::numeric::decimal::contains)) {

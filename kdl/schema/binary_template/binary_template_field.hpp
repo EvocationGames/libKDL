@@ -18,11 +18,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#if !defined(KDL_SCHEMA_BINARY_TEMPLATE_FIELD_HPP)
-#define KDL_SCHEMA_BINARY_TEMPLATE_FIELD_HPP
+#pragma once
 
 #include <string>
 #include <memory>
+#include <unordered_map>
+#include <kdl/lexer/lexeme.hpp>
 
 namespace kdl::lib
 {
@@ -30,18 +31,18 @@ namespace kdl::lib
 
     struct binary_template_field
     {
-    private:
-        std::shared_ptr<binary_type> m_type;
-        std::string m_name;
 
     public:
-        binary_template_field(const std::shared_ptr<binary_type>& type, const std::string& name);
+        binary_template_field(const std::shared_ptr<binary_type>& type, const std::unordered_map<std::string, lexeme>& type_args, const std::string& name);
 
         [[nodiscard]] auto type() const -> std::shared_ptr<binary_type>;
         [[nodiscard]] auto name() const -> std::string;
+        [[nodiscard]] auto type_args() const -> std::unordered_map<std::string, lexeme>;
 
+    private:
+        std::shared_ptr<binary_type> m_type;
+        std::unordered_map<std::string, lexeme> m_type_args;
+        std::string m_name;
     };
 
 }
-
-#endif //KDL_SCHEMA_BINARY_TEMPLATE_BINARY_TEMPLATE_FIELD_HPP

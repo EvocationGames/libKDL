@@ -38,20 +38,43 @@ auto kdl::lib::sema::define::binary_template::parse(lexeme_consumer& consumer,
             consumer.advance(1);
         }
 
-        if (!consumer.expect_all({
-            expect(lexeme_type::identifier).t(),
-            expect(lexeme_type::identifier).t()
-        })) {
-            report::error(consumer.peek(), "Expected identifier for binary field type, and identifier for field name.");
+        if (!consumer.expect( expect(lexeme_type::identifier).t() )) {
+            report::error(consumer.peek(), "Expected identifier for binary field type.");
         }
-
         auto binary_type_name = consumer.read();
-        auto field_name = consumer.read();
         auto binary_type = module->binary_type_named(binary_type_name.string_value(), namespace_path);
         if (binary_type.expired()) {
             report::error(binary_type_name, "Unknown binary type specified: '" + binary_type_name.string_value() + "'");
         }
-        tmpl->add_field(binary_type.lock(), field_name.string_value());
+
+        std::unordered_map<std::string, lexeme> args;
+        if (consumer.expect( expect(lexeme_type::langle).t() )) {
+            consumer.advance();
+
+            // Make sure we have the correct number of attachments provided.
+            const auto& attachments = binary_type.lock()->attachments();
+            for (const auto& it : attachments) {
+                if (!consumer.expect_any({
+                    expect(lexeme_type::integer).t(),
+                    expect(lexeme_type::percentage).t(),
+                    expect(lexeme_type::resource_ref).t()
+                })) {
+                    report::error(consumer.peek(), "Expected numeric value for binary field type argument.");
+                }
+
+                auto arg = consumer.read();
+                args.insert(std::pair(it.string_value(), arg));
+            }
+
+            consumer.assert_lexemes({ expect(lexeme_type::rangle).t() });
+        }
+
+        if (!consumer.expect_all({ expect(lexeme_type::identifier).t() })) {
+            report::error(consumer.peek(), "Expected identifier for field name.");
+        }
+
+        auto field_name = consumer.read();
+        tmpl->add_field(binary_type.lock(), args, field_name.string_value());
 
         consumer.assert_lexemes({ expect(lexeme_type::semicolon).t() });
     }

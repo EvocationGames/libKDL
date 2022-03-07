@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #include <utility>
+#include <unordered_set>
 #include <kdl/schema/module.hpp>
 #include <kdl/schema/namespace.hpp>
 #include <kdl/schema/binary_type/binary_type.hpp>
@@ -26,6 +27,7 @@
 #include <kdl/schema/resource_type/resource_type.hpp>
 #include <kdl/schema/function/function.hpp>
 #include <kdl/schema/project/scene.hpp>
+#include <kdl/schema/resource/resource.hpp>
 
 // MARK: - Constructor
 
@@ -82,6 +84,11 @@ auto kdl::lib::module::submodule_named(const std::string& name) const -> std::we
 }
 
 // MARK: - Accessors
+
+auto kdl::lib::module::name() const -> std::string
+{
+    return m_module_name;
+}
 
 auto kdl::lib::module::copyright(bool complete) const -> std::vector<std::string>
 {
@@ -220,9 +227,27 @@ auto kdl::lib::module::resource_type_named(const std::string& name, const std::v
     }
 }
 
-auto kdl::lib::module::resource_types() const -> const std::vector<std::shared_ptr<resource_type>>&
+auto kdl::lib::module::resource_types() -> std::vector<std::shared_ptr<resource_type>>
 {
-    return m_resource_type_definitions;
+    std::unordered_set<std::string> type_names;
+    std::vector<std::shared_ptr<resource_type>> types = m_resource_type_definitions;
+
+    for (const auto& type : types) {
+        type_names.insert(type->name());
+    }
+
+    if (auto ns = get_namespace().lock()) {
+        for (const auto& res : m_resource_declarations) {
+            if (auto type = ns->resource_type_named(res.first, {}).lock()) {
+                if (type_names.find(type->name()) == type_names.end()) {
+                    type_names.insert(type->name());
+                    types.emplace_back(type);
+                }
+            }
+        }
+    }
+
+    return types;
 }
 
 // MARK: - Functions
@@ -266,4 +291,33 @@ auto kdl::lib::module::add_scene(const std::shared_ptr<scene>& scene) -> void
 auto kdl::lib::module::scenes() const -> std::vector<std::shared_ptr<scene>>
 {
     return m_scenes;
+}
+
+// MARK: - Resources
+
+auto kdl::lib::module::add_resource(const std::shared_ptr<resource> &res) -> void
+{
+    auto type_name = res->type().lock();
+    if (!type_name) {
+        // TODO: Handle this error case correctly.
+        return;
+    }
+
+    auto it = m_resource_declarations.find(type_name->name());
+    if (it == m_resource_declarations.end()) {
+        auto pair = std::pair(type_name->name(), std::vector<std::shared_ptr<resource>>());
+        it = m_resource_declarations.insert(pair).first;
+    }
+
+    it->second.emplace_back(res);
+}
+
+auto kdl::lib::module::resources(const std::string& type) const -> std::vector<std::shared_ptr<resource>>
+{
+    auto it = m_resource_declarations.find(type);
+    if (it == m_resource_declarations.end()) {
+        // TODO: Handle the type not being found correctly.
+        return {};
+    }
+    return it->second;
 }

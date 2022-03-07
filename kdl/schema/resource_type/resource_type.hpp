@@ -32,23 +32,28 @@ namespace kdl::lib
 
     struct resource_type
     {
-    private:
-        std::string m_name;
-        std::string m_code;
-        std::weak_ptr<binary_template> m_template;
-        std::vector<std::shared_ptr<resource_field>> m_fields;
-
     public:
         resource_type(const std::string& name, const std::string& code);
 
         [[nodiscard]] auto name() const -> std::string;
         [[nodiscard]] auto code() const -> std::string;
 
+        auto set_uses_code_editor(bool f) -> void { m_use_code_editor = f; }
+        [[nodiscard]] auto uses_code_editor() const -> bool { return m_use_code_editor; }
+
         auto set_binary_template(const std::weak_ptr<struct binary_template>& tmpl) -> void;
         [[nodiscard]] auto binary_template() const -> std::weak_ptr<struct binary_template>;
 
         auto add_field(const std::shared_ptr<struct resource_field>& field) -> void;
         [[nodiscard]] auto fields() const -> const std::vector<std::shared_ptr<resource_field>>&;
+        [[nodiscard]] auto field_named(const std::string& name) const -> std::shared_ptr<resource_field>;
+
+    private:
+        bool m_use_code_editor { false };
+        std::string m_name;
+        std::string m_code;
+        std::weak_ptr<struct binary_template> m_template;
+        std::vector<std::shared_ptr<resource_field>> m_fields;
     };
 }
 

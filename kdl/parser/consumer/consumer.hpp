@@ -51,7 +51,8 @@ namespace kdl::lib
         auto advance(std::int32_t offset = 1) -> void;
 
         auto insert(std::vector<lexeme> lx, std::int32_t offset = 0) -> void;
-        auto push_lexemes(std::initializer_list<lexeme> lexemes) -> void;
+        auto push_lexemes(std::initializer_list<lexeme> lexemes, size_t offset = 0) -> void;
+        auto push_lexemes(std::vector<lexeme> lexemes, size_t offset = 0) -> void;
         auto drop_lexemes() -> void;
 
         [[nodiscard]] auto peek(std::int32_t offset = 0) const -> lexeme;

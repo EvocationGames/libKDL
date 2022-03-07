@@ -43,6 +43,8 @@ namespace kdl::lib
         [[nodiscard]] auto path() const -> std::string;
 
         [[nodiscard]] auto size() const -> std::size_t;
+
+        [[nodiscard]] auto relative_path(const std::string& rel) const -> std::string;
     };
 
 }

@@ -38,9 +38,9 @@ auto kdl::lib::binary_template::name() const -> std::string
 
 // MARK: - Field Management
 
-auto kdl::lib::binary_template::add_field(const std::shared_ptr<binary_type>& type, const std::string& name) -> void
+auto kdl::lib::binary_template::add_field(const std::shared_ptr<binary_type>& type, const std::unordered_map<std::string, lexeme>& type_args, const std::string& name) -> void
 {
-    m_fields.emplace_back(std::make_shared<binary_template_field>(type, name));
+    m_fields.emplace_back(std::make_shared<binary_template_field>(type, type_args, name));
 }
 
 // MARK: - Field Querying and Accessors

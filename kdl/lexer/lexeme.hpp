@@ -42,6 +42,7 @@ namespace kdl::lib
         file_reference m_ref;
 
     public:
+        lexeme();
         explicit lexeme(lexeme_type type, const std::string& value = "");
         lexeme(lexeme_type type, file_reference ref, const std::string& value = "");
 
@@ -67,6 +68,9 @@ namespace kdl::lib
         [[nodiscard]] auto uint64_value() const -> uint64_t;
         [[nodiscard]] auto double_value() const -> double;
         [[nodiscard]] auto long_double_value() const -> long double;
+
+        [[nodiscard]] auto resource_id() const -> int64_t;
+        [[nodiscard]] auto resource_type() const -> std::string;
 
         [[nodiscard]] auto describe() const -> std::string;
 

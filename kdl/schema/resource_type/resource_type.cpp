@@ -19,6 +19,7 @@
 // SOFTWARE.
 
 #include <kdl/schema/resource_type/resource_type.hpp>
+#include <kdl/schema/resource_type/resource_field.hpp>
 #include <kdl/schema/binary_template/binary_template.hpp>
 
 // MARK: - Construction
@@ -63,4 +64,14 @@ auto kdl::lib::resource_type::add_field(const std::shared_ptr<struct resource_fi
 auto kdl::lib::resource_type::fields() const -> const std::vector<std::shared_ptr<resource_field>>&
 {
     return m_fields;
+}
+
+auto kdl::lib::resource_type::field_named(const std::string &name) const -> std::shared_ptr<resource_field>
+{
+    for (const auto& field : m_fields) {
+        if (field->name() == name) {
+            return field;
+        }
+    }
+    return nullptr;
 }

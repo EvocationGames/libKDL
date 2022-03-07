@@ -21,17 +21,30 @@
 #pragma once
 
 #include <memory>
-#include <kdl/parser/consumer/consumer.hpp>
+#include <string>
+#include <unordered_map>
+#include <kdl/lexer/lexeme.hpp>
 
 namespace kdl::lib
 {
-    class module;
-    class layer;
+    struct resource_type;
+
+    struct resource
+    {
+    public:
+        resource(const std::shared_ptr<resource_type>& type, int64_t id, const std::string& name = "");
+
+        [[nodiscard]] inline auto id() const -> int64_t { return m_id; }
+        [[nodiscard]] inline auto name() const -> std::string { return m_name; }
+        [[nodiscard]] inline auto type() const -> std::weak_ptr<resource_type> { return m_type; }
+
+        [[nodiscard]] auto value(const std::string& field_name) const -> lexeme;
+        auto set_value(const lexeme& lx, const std::string& field_name) -> void;
+
+    private:
+        int64_t m_id;
+        std::string m_name;
+        std::weak_ptr<resource_type> m_type;
+        std::unordered_map<std::string, lexeme> m_values;
+    };
 }
-
-namespace kdl::lib::sema::project::scene::layer::entity
-{
-    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::layer>& layer, const std::shared_ptr<kdl::lib::module>& module) -> void;
-}
-
-

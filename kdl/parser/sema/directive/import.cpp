@@ -18,34 +18,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#include <kdl/parser/sema/directive/import.hpp>
+#include <kdl/lexer/lexer.hpp>
 
-#include <kdl/schema/project/entity.hpp>
-
-// MARK: - Construction
-
-kdl::lib::entity::entity(const std::string &name)
-    : m_name(name)
+auto kdl::lib::sema::directive::import::parse(lexeme_consumer &consumer) -> void
 {
+    consumer.assert_lexemes({ expect(lexeme_type::directive, "import").t() });
+
+    if (consumer.expect( expect(lexeme_type::string).t() )) {
+        auto relative_path = consumer.read();
+        auto absolute_path = relative_path.file_reference().file().relative_path(relative_path.string_value());
+        auto file = std::make_shared<source_file>("", absolute_path);
+
+        lexer sub_lexer { file };
+        consumer.insert(sub_lexer.scan(), 1);
+    }
 }
 
-// MARK: - Attribute Management
-
-auto kdl::lib::entity::set_attribute(const std::string &attribute, const lexeme &value) -> void
-{
-    set_attribute(attribute, std::vector<lexeme>({value}));
-}
-
-auto kdl::lib::entity::set_attribute(const std::string &attribute, const std::vector<lexeme> &value) -> void
-{
-    m_attributes.insert(std::pair(attribute, value));
-}
-
-auto kdl::lib::entity::get_attribute(const std::string &attribute) -> std::vector<lexeme> &
-{
-    return m_attributes.at(attribute);
-}
-
-auto kdl::lib::entity::has_attribute(const std::string &attribute) -> bool
-{
-    return (m_attributes.find(attribute) != m_attributes.end());
-}

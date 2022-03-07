@@ -58,8 +58,31 @@ auto kdl::lib::sema::define::parse(lexeme_consumer &consumer, const std::shared_
             // Binary Type Definition
             consumer.advance();
             auto name = consumer.read();
-            continuation = [&consumer, name, module] {
+
+            // Check for any attachment values.
+            std::vector<lexeme> attachments;
+            if (consumer.expect( expect(lexeme_type::langle).t() )) {
+                consumer.advance();
+                while (consumer.expect( expect(lexeme_type::rangle).f() )) {
+                    attachments.emplace_back(consumer.read());
+
+                    if (consumer.expect( expect(lexeme_type::rangle).t() )) {
+                        break;
+                    }
+                    else if (consumer.expect( expect(lexeme_type::comma).t() )) {
+                        consumer.advance();
+                        continue;
+                    }
+                    else {
+                        report::error(consumer.peek(), "Expected either '<' or ','");
+                    }
+                }
+                consumer.assert_lexemes({ expect(lexeme_type::rangle).t() });
+            }
+
+            continuation = [&consumer, name, module, attachments] {
                 auto type = std::make_shared<struct binary_type>(name.string_value());
+                type->set_attachments(attachments);
                 sema::define::binary_type::parse(consumer, type);
                 module->add_binary_type_definition(type);
             };

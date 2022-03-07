@@ -19,7 +19,6 @@
 // SOFTWARE.
 
 #include <kdl/parser/sema/project/scene.hpp>
-#include <kdl/parser/sema/project/layer.hpp>
 #include <kdl/parser/sema/function/function_call.hpp>
 #include <kdl/schema/project/scene.hpp>
 #include <kdl/schema/module.hpp>
@@ -28,7 +27,7 @@
 namespace kdl::lib::spec::keywords
 {
     constexpr const char *scene { "scene" };
-    constexpr const char *layer { "layer" };
+    constexpr const char *event { "event" };
 }
 
 auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std::shared_ptr<kdl::lib::module> &module) -> void
@@ -48,8 +47,40 @@ auto kdl::lib::sema::project::scene::parse(lexeme_consumer &consumer, const std:
     auto scene = std::make_shared<class kdl::lib::scene>(scene_name.string_value());
 
     while (consumer.expect( expect(lexeme_type::rbrace).f() )) {
-        if (consumer.expect( expect(lexeme_type::identifier, spec::keywords::layer).t() )) {
-            layer::parse(consumer, scene, module);
+        if (consumer.expect_all({
+            expect(lexeme_type::identifier, spec::keywords::event).t(),
+            expect(lexeme_type::lparen).t(),
+            expect(lexeme_type::identifier).t(),
+            expect(lexeme_type::rparen).t(),
+            expect(lexeme_type::equals).t(),
+            expect(lexeme_type::lbracket).t()
+        })) {
+            consumer.advance(2);
+            auto event_name = consumer.read();
+            consumer.advance(3);
+
+            std::vector<lexeme> scripts;
+            while (consumer.expect( expect(lexeme_type::rbracket).f() )) {
+                if (consumer.expect( expect(lexeme_type::resource_ref).t() )) {
+                    scripts.emplace_back(consumer.read());
+                }
+                else {
+                    report::error(consumer.peek(), "Unexpected value provided.");
+                }
+
+                if (consumer.expect( expect(lexeme_type::rbracket).t() )) {
+                    break;
+                }
+                else if (consumer.expect( expect(lexeme_type::comma).t() )) {
+                    consumer.advance();
+                    continue;
+                }
+                else {
+                    report::error(consumer.peek(), "Unexpected token encountered.");
+                }
+            }
+
+            consumer.assert_lexemes({ expect(lexeme_type::rbracket).t() });
         }
         else if (consumer.expect_all({
             expect(lexeme_type::identifier).t(), expect(lexeme_type::equals).t(),

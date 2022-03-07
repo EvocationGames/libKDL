@@ -20,28 +20,15 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <kdl/lexer/lexeme.hpp>
+#include <memory>
+#include <kdl/parser/consumer/consumer.hpp>
 
 namespace kdl::lib
 {
-    struct entity
-    {
-    public:
-        explicit entity(const std::string& name);
+    class module;
+}
 
-        [[nodiscard]] inline auto name() const -> std::string { return m_name; }
-
-        auto set_attribute(const std::string& attribute, const lexeme& value) -> void;
-        auto set_attribute(const std::string& attribute, const std::vector<lexeme>& value) -> void;
-
-        auto has_attribute(const std::string& attribute) -> bool;
-        auto get_attribute(const std::string& attribute) -> std::vector<lexeme>&;
-
-    private:
-        std::string m_name;
-        std::unordered_map<std::string, std::vector<lexeme>> m_attributes;
-    };
+namespace kdl::lib::sema::declare
+{
+    auto parse(lexeme_consumer& consumer, const std::shared_ptr<kdl::lib::module>& module) -> void;
 }

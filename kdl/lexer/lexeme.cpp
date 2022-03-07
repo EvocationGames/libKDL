@@ -19,14 +19,20 @@
 // SOFTWARE.
 
 #include <vector>
+#include <sstream>
+#include <string>
 #include <kdl/lexer/lexeme.hpp>
 
 // MARK: - Constructor
 
+kdl::lib::lexeme::lexeme()
+    : m_type(lexeme_type::unknown), m_value("")
+{
+}
+
 kdl::lib::lexeme::lexeme(lexeme_type type, const std::string& value)
     : m_type(type), m_value(value)
 {
-
 }
 
 kdl::lib::lexeme::lexeme(lexeme_type type, kdl::lib::file_reference ref, const std::string& value)
@@ -168,6 +174,39 @@ auto kdl::lib::lexeme::long_double_value() const -> long double
 {
     // TODO: Handle overflow and underflow errors
     return static_cast<long double>(std::stold(m_value));
+}
+
+// MARK: - Resource Reference Specific
+
+static inline auto resource_reference_split(const std::string& ref) -> std::vector<std::string>
+{
+    std::stringstream stream(ref);
+    std::vector<std::string> components;
+    std::string segment;
+    while (std::getline(stream, segment,'.')) {
+        components.emplace_back(segment);
+    }
+    return components;
+}
+
+auto kdl::lib::lexeme::resource_id() const -> int64_t
+{
+    if (is(lexeme_type::resource_ref)) {
+        auto components = resource_reference_split(m_value);
+        return static_cast<int64_t>(std::stoll(components.back()));
+    }
+    return 0;
+}
+
+auto kdl::lib::lexeme::resource_type() const -> std::string
+{
+    if (is(lexeme_type::resource_ref)) {
+        auto components = resource_reference_split(m_value);
+        if (components.size() >= 2) {
+            return components[components.size() - 2];
+        }
+    }
+    return "";
 }
 
 // MARK: - Description
