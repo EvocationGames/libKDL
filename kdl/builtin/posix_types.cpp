@@ -18,39 +18,69 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <kdl/parser/sema/directive/import.hpp>
-#include <kdl/lexer/lexer.hpp>
-#include <kdl/report/reporting.hpp>
-#include <kdl/builtin/resedit_types.hpp>
 #include <kdl/builtin/posix_types.hpp>
-#include <kdl/builtin/kestrel_foundation.hpp>
+#include <kdl/lexer/lexer.hpp>
 
-auto kdl::lib::sema::directive::import::parse(lexeme_consumer &consumer) -> void
+// MARK: - Posix Types
+
+static bool s_posix_imported = false;
+
+static constexpr const char *posix_kdl = {R"(
+@module POSIX {
+    define(*type UInt8) {
+		isa = integer;
+		size = 8;
+	};
+
+	define(*type Int8) {
+		isa = integer;
+		size = 8;
+		is_signed;
+	};
+
+	define(*type UInt16) {
+		isa = integer;
+		size = 16;
+	};
+
+	define(*type Int16) {
+		isa = integer;
+		size = 16;
+		is_signed;
+	};
+
+	define(*type UInt32) {
+		isa = integer;
+		size = 32;
+	};
+
+	define(*type Int32) {
+		isa = integer;
+		size = 32;
+		is_signed;
+	};
+
+	define(*type UInt64) {
+		isa = integer;
+		size = 64;
+	};
+
+	define(*type Int64) {
+		isa = integer;
+		size = 64;
+		is_signed;
+	};
+};
+)"};
+
+// MARK: - Importer
+
+auto kdl::lib::builtin::posix::import(lexeme_consumer &consumer) -> void
 {
-    consumer.assert_lexemes({ expect(lexeme_type::directive, "import").t() });
-
-    if (consumer.expect( expect(lexeme_type::string).t() )) {
-        auto relative_path = consumer.read();
-        auto absolute_path = relative_path.file_reference().file().relative_path(relative_path.string_value());
-        auto file = std::make_shared<source_file>("", absolute_path);
-
+    if (!s_posix_imported) {
+        auto file = std::make_shared<source_file>(posix_kdl);
         lexer sub_lexer { file };
         consumer.insert(sub_lexer.scan(), 1);
     }
-    else if (consumer.expect( expect(lexeme_type::identifier, "ResEdit").t() )) {
-        consumer.advance();
-        builtin::resedit::import(consumer);
-    }
-    else if (consumer.expect( expect(lexeme_type::identifier, "POSIX").t() )) {
-        consumer.advance();
-        builtin::posix::import(consumer);
-    }
-    else if (consumer.expect( expect(lexeme_type::identifier, "KestrelFoundation").t() )) {
-        consumer.advance();
-        builtin::kestrel::import(consumer);
-    }
-    else {
-        report::error(consumer.peek(), "Unknown import type.");
-    }
+    s_posix_imported = true;
 }
-
